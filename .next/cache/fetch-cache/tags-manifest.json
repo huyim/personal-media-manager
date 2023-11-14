@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "items": {
+    "/exploration/page": {
+      "keys": [
+        "edc42b5ccb0f0606cf4a0608be07890a33003e8dffe56ac7f4110d7d793c4a41"
+      ]
+    },
+    "/upload/page": {
+      "keys": [
+        "edc42b5ccb0f0606cf4a0608be07890a33003e8dffe56ac7f4110d7d793c4a41"
+      ]
+    }
+  }
+}

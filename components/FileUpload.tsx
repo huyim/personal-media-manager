@@ -36,7 +36,7 @@ const SingleFileUploadForm: NextPage<Props> = () => {
         body: formData,
       }).then((response) => response.json());
 
-      console.log('File was uploaded successfylly:', file['name']);
+      console.log('File was uploaded successfully:', file['name']);
     } catch (error: any) {
       console.error(error);
       alert('File upload failed.');
@@ -55,7 +55,7 @@ const SingleFileUploadForm: NextPage<Props> = () => {
             <div className="mx-auto w-80">
               <Image
                 alt="file uploader preview"
-                objectFit="cover"
+                style={{ objectFit: 'cover' }}
                 src={previewUrl}
                 width={320}
                 height={218}
