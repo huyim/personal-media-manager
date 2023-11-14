@@ -1446,6 +1446,9 @@ select {
 .mt-px {
   margin-top: 1px;
 }
+.mt-2 {
+  margin-top: 0.5rem;
+}
 .line-clamp-3 {
   overflow: hidden;
   display: -webkit-box;
@@ -1960,10 +1963,6 @@ select {
 .bg-gray-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(244 244 245 / var(--tw-bg-opacity));
-}
-.bg-gray-1100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(10 10 11 / var(--tw-bg-opacity));
 }
 .bg-gray-200 {
   --tw-bg-opacity: 1;

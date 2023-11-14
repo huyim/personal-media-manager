@@ -46,10 +46,13 @@ const SingleFileUploadForm: NextPage<Props> = () => {
 
   return (
     <form
-      className="w-full border border-dashed border-gray-500 p-3"
+      className="w-full border-gray-500 p-3"
       onSubmit={(e) => e.preventDefault()}
     >
       <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
+        <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+          fileinfo
+        </div>
         <div className="flex-grow">
           {previewUrl ? (
             <div className="mx-auto w-80">
@@ -71,9 +74,9 @@ const SingleFileUploadForm: NextPage<Props> = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="#000000"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 <g transform="translate(2 3)">
                   <path d="M20 16a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3l2-3h6l2 3h3a2 2 0 0 1 2 2v11z" />
@@ -100,23 +103,34 @@ const SingleFileUploadForm: NextPage<Props> = () => {
             </label>
           )}
         </div>
-        <div className="mt-4 flex justify-center gap-1.5 md:mt-0 md:flex-col">
+        <div className="justify-top mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+          <button
+            disabled={!previewUrl}
+            onClick={handleUpload}
+            className="w-1/2 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue-800 disabled:bg-gray-200 md:w-auto md:text-base"
+          >
+            Save & Upload
+          </button>
           <button
             disabled={!previewUrl}
             onClick={onCancelFile}
-            className="w-1/2 rounded-sm bg-gray-700 px-4 py-3 text-sm font-medium text-white transition-colors duration-300 hover:bg-red-400 disabled:bg-gray-200 md:w-auto md:text-base"
+            className="w-1/2 rounded-sm bg-gray-700 px-2 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-red-400 disabled:bg-gray-200 md:w-auto md:text-base"
           >
             Cancel file
           </button>
-          <Link href={`/${'exploration'}`}>
-            <button
-              disabled={!previewUrl}
-              onClick={handleUpload}
-              className="w-1/2 rounded-sm bg-gray-700 px-4 py-3 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue-800 disabled:bg-gray-200 md:w-auto md:text-base"
-            >
-              Save & Upload
-            </button>
-          </Link>
+        </div>
+      </div>
+      <hr />
+      <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
+        <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+          Key Frames
+        </div>
+      </div>
+
+      <hr />
+      <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
+        <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+          Tags
         </div>
       </div>
     </form>
