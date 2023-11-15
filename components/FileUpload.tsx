@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 interface Props {}
 
-const SingleFileUploadForm: NextPage<Props> = () => {
+const FileUpload: NextPage<Props> = () => {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -120,11 +120,41 @@ const SingleFileUploadForm: NextPage<Props> = () => {
           </button>
         </div>
       </div>
-      <hr />
-      <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
+      {/* <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
         <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
           Key Frames
         </div>
+        {previewUrl ? (
+          <div className="mx-auto w-80">
+            <Image
+              alt="file uploader preview"
+              style={{ objectFit: 'cover' }}
+              src={
+                'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug'
+              }
+              width={320}
+              height={218}
+              layout="fixed"
+            />
+          </div>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#000000"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <g transform="translate(2 3)">
+              <path d="M20 16a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3l2-3h6l2 3h3a2 2 0 0 1 2 2v11z" />
+              <circle cx="10" cy="10" r="4" />
+            </g>
+          </svg>
+        )}
       </div>
 
       <hr />
@@ -132,9 +162,9 @@ const SingleFileUploadForm: NextPage<Props> = () => {
         <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
           Tags
         </div>
-      </div>
+      </div> */}
     </form>
   );
 };
 
-export default SingleFileUploadForm;
+export default FileUpload;

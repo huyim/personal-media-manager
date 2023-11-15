@@ -1,25 +1,10 @@
 {
   "pages": {
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
-    ],
-    "/not-found": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/not-found.js"
-    ],
-    "/upload/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/upload/layout.js"
     ],
     "/upload/template": [
       "static/chunks/webpack.js",
@@ -31,25 +16,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/upload/page.js"
     ],
-    "/exploration/page": [
+    "/upload/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/exploration/page.js"
+      "static/chunks/app/upload/layout.js"
     ],
-    "/exploration/layout": [
+    "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/exploration/layout.js"
-    ],
-    "/exploration/template": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/exploration/template.js"
-    ],
-    "/exploration/loading": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/exploration/loading.js"
+      "static/chunks/app/not-found.js"
     ]
   }
 }

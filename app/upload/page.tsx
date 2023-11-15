@@ -1,7 +1,10 @@
 'use client';
 
 import type { NextPage } from 'next';
-import SingleFileUploadForm from '../../components/FileUpload';
+import FileUpload from '../../components/FileUpload';
+import KeyFrame from '../../components/KeyFrame';
+import AddTag from '../../components/AddTag';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -18,10 +21,11 @@ const Home: NextPage = () => {
       <h1 className="text-xl font-bold text-black">Upload and Adding Tags</h1>
       <main className="py-10">
         <div className="mx-auto w-full max-w-3xl px-3">
-          <SingleFileUploadForm />
-          {/* <hr />
-
-          <hr /> */}
+          <FileUpload />
+          <hr />
+          <KeyFrame />
+          <hr />
+          <AddTag />
         </div>
       </main>
     </div>
