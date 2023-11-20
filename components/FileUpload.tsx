@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
 
+const UPLOAD_PATH = 'http://localhost:8080/add/file';
+
 interface Props {}
 
 const FileUpload: NextPage<Props> = () => {
@@ -31,7 +33,7 @@ const FileUpload: NextPage<Props> = () => {
       const formData = new FormData();
       formData.append('media', file);
 
-      fetch('http://localhost:8080/add/file', {
+      fetch(UPLOAD_PATH, {
         method: 'POST',
         body: formData,
       }).then((response) => response.json());

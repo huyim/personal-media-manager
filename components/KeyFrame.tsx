@@ -1,41 +1,145 @@
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
+// Copyright (c) Meta Platforms, Inc. and affiliates.
+// All rights reserved.
 
-export default function App() {
-  const [frame, setFrame] = useState([]);
-  const url =
-    'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug';
+// This source code is licensed under the license found in the
+// LICENSE file in the root directory of this source tree.
+'use client';
 
+import { InferenceSession, Tensor } from 'onnxruntime-web';
+import React, { useContext, useEffect, useState } from 'react';
+import '../styles/globals.css';
+import { handleImageScale } from './helpers/scaleHelper';
+import { modelScaleProps } from './helpers/Interfaces';
+import { onnxMaskToImage } from './helpers/maskUtils';
+import { modelData } from './helpers/onnxModelAPI';
+import { promises as fs } from 'fs';
+import Stage from './helpers/Stage';
+import AppContext from './helpers/createContext';
+const ort = require('onnxruntime-web');
+/* @ts-ignore */
+import npyjs from 'npyjs';
+
+// Define image, embedding and model paths
+const IMAGE_PATH =
+  'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug';
+const IMAGE_EMBEDDING = './_next/static/chunks/pages/dogs_embedding.npy';
+const MODEL_DIR = './_next/static/chunks/pages/sam_onnx_example.onnx';
+
+const App = () => {
+  const {
+    clicks: [clicks],
+    image: [, setImage],
+    maskImg: [, setMaskImg],
+  } = useContext(AppContext)!;
+  const [model, setModel] = useState<InferenceSession | null>(null); // ONNX model
+  const [tensor, setTensor] = useState<Tensor | null>(null); // Image embedding tensor
+
+  // The ONNX model expects the input to be rescaled to 1024.
+  // The modelScale state variable keeps track of the scale values.
+  const [modelScale, setModelScale] = useState<modelScaleProps | null>(null);
+
+  // Initialize the ONNX model. load the image, and load the SAM
+  // pre-computed image embedding
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await fetch(
-        'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
-      );
-      const jsonResult = await result.json();
+    // Initialize the ONNX model
+    const initModel = async () => {
+      try {
+        if (MODEL_DIR === undefined) return;
+        const URL: string = MODEL_DIR;
 
-      setFrame(jsonResult);
+        const model = await InferenceSession.create(URL);
+        setModel(model);
+      } catch (e) {
+        console.log(e);
+      }
     };
+    initModel();
 
-    fetchData();
+    // Load the image
+    const url = new URL(IMAGE_PATH, location.origin);
+    loadImage(url);
+
+    // Load the Segment Anything pre-computed embedding
+    Promise.resolve(loadNpyTensor(IMAGE_EMBEDDING, 'float32')).then(
+      (embedding) => setTensor(embedding),
+    );
   }, []);
 
+  const loadImage = async (url: URL) => {
+    try {
+      const img = new Image();
+      img.src = url.href;
+      img.onload = () => {
+        const { height, width, samScale } = handleImageScale(img);
+        setModelScale({
+          height: height, // original image height
+          width: width, // original image width
+          samScale: samScale, // scaling factor for image which has been resized to longest side 1024
+        });
+        img.width = width;
+        img.height = height;
+        setImage(img);
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Decode a Numpy file into a tensor.
+  const loadNpyTensor = async (tensorFile: string, dType: string) => {
+    let npLoader = new npyjs();
+    const npArray = await npLoader.load(tensorFile);
+    const tensor = new ort.Tensor(dType, npArray.data, npArray.shape);
+    return tensor;
+  };
+
+  // Run the ONNX model every time clicks has changed
+  useEffect(() => {
+    runONNX();
+  }, [clicks]);
+
+  const runONNX = async () => {
+    try {
+      if (
+        model === null ||
+        clicks === null ||
+        tensor === null ||
+        modelScale === null
+      )
+        return;
+      else {
+        // Preapre the model input in the correct format for SAM.
+        // The modelData function is from onnxModelAPI.tsx.
+        const feeds = modelData({
+          clicks,
+          tensor,
+          modelScale,
+        });
+        if (feeds === undefined) return;
+        // Run the SAM ONNX model with the feeds returned from modelData()
+        const results = await model.run(feeds);
+        const output = results[model.outputNames[0]];
+        // The predicted mask returned from the ONNX model is an array which is
+        // rendered as an HTML image using onnxMaskToImage() from maskUtils.tsx.
+        setMaskImg(
+          onnxMaskToImage(output.data, output.dims[2], output.dims[3]),
+        );
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
-      <div className="mt-4 flex justify-center gap-1.5 text-black md:mt-0 md:flex-col">
+    <div className="flex flex-col gap-1 md:flex-row md:py-4">
+      <div className="mt-4 flex justify-center gap-1 text-black md:mt-0 md:flex-col">
         Key Frames
       </div>
       <div className="mx-auto w-80">
-        <Image
-          alt="file uploader preview"
-          style={{ objectFit: 'cover' }}
-          src={
-            'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug'
-          }
-          width={320}
-          height={218}
-          layout="fixed"
-        />
+        <Stage />
       </div>
     </div>
   );
-}
+};
+
+export default App;
