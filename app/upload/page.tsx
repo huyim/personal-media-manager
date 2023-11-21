@@ -13,9 +13,9 @@ import Image from 'next/image';
 const Home: NextPage = () => {
   const [image, setImage] = useState('Loading');
 
-  // useEffect(() => {
-  //   fetch('http://127.0.0.1:5000/api/scene');
-  // }, []);
+  useEffect(() => {
+    fetch('http://127.0.0.1:5000/api/scene');
+  }, []);
 
   return (
     <div className="prose prose-sm prose-invert max-w-none">
