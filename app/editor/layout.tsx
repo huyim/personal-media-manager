@@ -1,4 +1,3 @@
-import { TabGroup } from '#/ui/tab-group';
 import React from 'react';
 
 const title = 'Editor';

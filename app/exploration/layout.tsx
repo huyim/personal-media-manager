@@ -1,5 +1,3 @@
-import { getCategories } from '#/app/api/categories/getCategories';
-
 import React from 'react';
 
 const title = 'Exploration';
@@ -16,8 +14,6 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const categories = await getCategories();
-
   return (
     <div className="space-y-9">
       <div>{children}</div>
