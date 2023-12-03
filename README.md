@@ -8,6 +8,8 @@
 npm install
 ```
 
+Note: For Windows, it may have errors and require install administrator command prompt.
+
 2. Start the dev server:
 
 ```sh
