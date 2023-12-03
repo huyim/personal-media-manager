@@ -1,11 +1,24 @@
 'use client';
 
 import { NextPage } from 'next';
-import Image from 'next/image';
-import { useState } from 'react';
-import Link from 'next/link';
+// import Image from 'next/image';
+import React, { useContext, useEffect, useState } from 'react';
 
-const UPLOAD_PATH = 'http://localhost:8080/add/file';
+import { InferenceSession, Tensor } from 'onnxruntime-web';
+import '../styles/globals.css';
+import { handleImageScale } from './helpers/scaleHelper';
+import { modelScaleProps } from './helpers/Interfaces';
+import { onnxMaskToImage } from './helpers/maskUtils';
+import { modelData } from './helpers/onnxModelAPI';
+import Stage from './helpers/Stage';
+import AppContext from './helpers/createContext';
+const ort = require('onnxruntime-web');
+/* @ts-ignore */
+import npyjs from 'npyjs';
+
+const BACKEND = 'http://localhost:8080/';
+const IMAGE_EMBEDDING = './_next/static/chunks/pages/dogs_embedding.npy';
+const MODEL_DIR = './_next/static/chunks/pages/sam_onnx_example.onnx';
 
 interface Props {}
 
@@ -13,7 +26,10 @@ const FileUpload: NextPage<Props> = () => {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  //const [videoFile, setVideoFile] = useState();
+  const [videoType, setVideotype] = useState(false);
+
+  const [fileId, setFileId] = useState<string | null>(null);
+  const [fileName, setFilename] = useState();
 
   const onCancelFile = async () => {
     if (!previewUrl && !file) {
@@ -31,13 +47,20 @@ const FileUpload: NextPage<Props> = () => {
       }
 
       const formData = new FormData();
-      formData.append('media', file);
 
-      fetch(UPLOAD_PATH, {
+      formData.append('media', file);
+      const filename = file['name'];
+
+      fetch(BACKEND + 'add/file', {
         method: 'POST',
         body: formData,
-      }).then((response) => response.json());
+      })
+        .then((response) => response.json())
 
+        .then((formData) => {
+          setFileId(formData[filename]['uri']);
+          console.log(fileId);
+        });
       console.log('File was uploaded successfully:', file['name']);
     } catch (error: any) {
       console.error(error);
@@ -46,26 +69,199 @@ const FileUpload: NextPage<Props> = () => {
     setUploading(false);
   };
 
+  ('/segment');
+
+  async function fetchMedia() {
+    let options = {
+      method: 'POST',
+      body: JSON.stringify({
+        s: ['<' + BACKEND + '/' + fileId + '>'],
+        p: [],
+        o: [],
+      }),
+    };
+    try {
+      let response = await fetch(BACKEND + 'query/quads', options);
+
+      if (response == undefined) return;
+      let data = await response.json();
+
+      data.results.forEach((res: any) => {
+        if (res.p === '<http://megras.org/schema#fileName>') {
+          setFilename(res.o.replace('^^String', ''));
+        }
+      });
+      // console.log(fileName);
+    } catch (error: any) {
+      console.error(error);
+      alert('ERROR');
+    }
+  }
+
+  const deleteMedia = async () => {
+    try {
+      let response = await fetch(BACKEND + '/' + fileId, {
+        method: 'DELETE',
+      });
+      console.log(fileId);
+
+      if (response == undefined) return;
+      if (response.ok) {
+        return window.open('/', '_self');
+      } else {
+        console.log(response.statusText);
+      }
+    } catch (error: any) {
+      console.error(error);
+      alert('ERROR');
+    }
+  };
+
+  const {
+    clicks: [clicks],
+    image: [, setImage],
+    maskImg: [, setMaskImg],
+  } = useContext(AppContext)!;
+  const [model, setModel] = useState<InferenceSession | null>(null); // ONNX model
+  const [tensor, setTensor] = useState<Tensor | null>(null); // Image embedding tensor
+
+  // The ONNX model expects the input to be rescaled to 1024.
+  // The modelScale state variable keeps track of the scale values.
+  const [modelScale, setModelScale] = useState<modelScaleProps | null>(null);
+
+  // Initialize the ONNX model. load the image, and load the SAM
+  // pre-computed image embedding
+  useEffect(() => {
+    // Initialize the ONNX model
+    const initModel = async () => {
+      try {
+        if (MODEL_DIR === undefined) return;
+        const URL: string = MODEL_DIR;
+
+        const model = await InferenceSession.create(URL);
+        setModel(model);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    initModel();
+
+    // Load the image
+    const url = new URL(
+      BACKEND + 'iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
+      location.origin,
+    );
+    console.log(fileId);
+    loadImage(url);
+
+    // Load the Segment Anything pre-computed embedding
+    Promise.resolve(loadNpyTensor(IMAGE_EMBEDDING, 'float32')).then(
+      (embedding) => setTensor(embedding),
+    );
+  }, []);
+
+  const loadImage = async (url: URL) => {
+    try {
+      const img = new Image();
+      img.src = url.href;
+      img.onload = () => {
+        const { height, width, samScale } = handleImageScale(img);
+        setModelScale({
+          height: height, // original image height
+          width: width, // original image width
+          samScale: samScale, // scaling factor for image which has been resized to longest side 1024
+        });
+        img.width = width;
+        img.height = height;
+        setImage(img);
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Decode a Numpy file into a tensor.
+  const loadNpyTensor = async (tensorFile: string, dType: string) => {
+    let npLoader = new npyjs();
+    const npArray = await npLoader.load(tensorFile);
+    const tensor = new ort.Tensor(dType, npArray.data, npArray.shape);
+    return tensor;
+  };
+
+  // Run the ONNX model every time clicks has changed
+  useEffect(() => {
+    runONNX();
+  }, [clicks]);
+
+  const runONNX = async () => {
+    try {
+      if (
+        model === null ||
+        clicks === null ||
+        tensor === null ||
+        modelScale === null
+      )
+        return;
+      else {
+        // Preapre the model input in the correct format for SAM.
+        // The modelData function is from onnxModelAPI.tsx.
+        const feeds = modelData({
+          clicks,
+          tensor,
+          modelScale,
+        });
+        if (feeds === undefined) return;
+        // Run the SAM ONNX model with the feeds returned from modelData()
+        const results = await model.run(feeds);
+        const output = results[model.outputNames[0]];
+        // The predicted mask returned from the ONNX model is an array which is
+        // rendered as an HTML image using onnxMaskToImage() from maskUtils.tsx.
+        setMaskImg(
+          onnxMaskToImage(output.data, output.dims[2], output.dims[3]),
+        );
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  fetchMedia();
+
   return (
     <form
       className="w-full border-gray-500 p-3"
       onSubmit={(e) => e.preventDefault()}
     >
       <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
-        <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
-          fileinfo
-        </div>
+        {fileName ? (
+          <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+            {fileName}
+          </div>
+        ) : (
+          <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+            fileinfo
+          </div>
+        )}
+
         <div className="flex-grow">
           {previewUrl ? (
             <div className="mx-auto w-80">
-              <Image
-                alt="file uploader preview"
-                style={{ objectFit: 'cover' }}
-                src={previewUrl}
-                width={320}
-                height={218}
-                layout="fixed"
-              />
+              {videoType ? (
+                <iframe
+                  style={{ objectFit: 'cover' }}
+                  src={previewUrl}
+                  width={320}
+                  height={180}
+                ></iframe>
+              ) : (
+                <img
+                  alt="image upload preview"
+                  style={{ objectFit: 'cover' }}
+                  src={previewUrl}
+                  width={320}
+                  height={180}
+                ></img>
+              )}
             </div>
           ) : (
             <label className="flex h-full cursor-pointer flex-col items-center justify-center py-3 transition-colors duration-150 hover:text-gray-600">
@@ -96,30 +292,72 @@ const FileUpload: NextPage<Props> = () => {
                   if (target.files) {
                     const file = target.files[0];
                     /** Setting file state */
-                    setFile(file); // we will use the file state, to send it later to the server
+                    setFile(file);
 
-                    setPreviewUrl(URL.createObjectURL(file)); // we will use this to show the preview of the image}
+                    setPreviewUrl(URL.createObjectURL(file));
+                    if (file.type[0] === 'v') {
+                      setVideotype(true);
+                    } else if (file.type[0] === 'i') {
+                      setVideotype(false);
+                    }
                   }
                 }}
               />
             </label>
           )}
         </div>
-        <div className="justify-top mt-4 flex gap-1.5 md:mt-0 md:flex-col">
-          <button
-            disabled={!previewUrl}
-            onClick={handleUpload}
-            className="w-1/2 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue-800 disabled:bg-gray-200 md:w-auto md:text-base"
-          >
-            Save & Upload
-          </button>
-          <button
-            disabled={!previewUrl}
-            onClick={onCancelFile}
-            className="w-1/2 rounded-sm bg-gray-700 px-2 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-red-400 disabled:bg-gray-200 md:w-auto md:text-base"
-          >
-            Cancel file
-          </button>
+
+        {fileId ? (
+          <div className="justify-top mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+            <button
+              disabled={!fileId}
+              onClick={deleteMedia}
+              className="w-1/2 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-red-400 disabled:bg-gray-200 md:w-auto md:text-base"
+            >
+              Delete
+            </button>
+          </div>
+        ) : (
+          <div className="justify-top mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+            <button
+              disabled={!previewUrl}
+              onClick={handleUpload}
+              className="w-1/2 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue-800 disabled:bg-gray-200 md:w-auto md:text-base"
+            >
+              Upload
+            </button>
+            <button
+              disabled={!previewUrl}
+              onClick={onCancelFile}
+              className="w-1/2 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-red-400 disabled:bg-gray-200 md:w-auto md:text-base"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+      <hr />
+      <div className="flex flex-col gap-1 md:flex-row md:py-4">
+        <div className="mt-4 flex justify-center gap-1 text-black md:mt-0 md:flex-col">
+          Key Frames
+        </div>
+        <div className="mx-auto w-80">
+          <Stage />
+        </div>
+      </div>
+      <hr />
+      <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
+        <div className="mt-4 flex justify-center gap-1.5 text-black md:mt-0 md:flex-col">
+          Tags
+        </div>
+        <div className="mx-auto w-80">
+          <input
+            type="search"
+            id="default-search"
+            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            placeholder="Add tags..."
+            required
+          />
         </div>
       </div>
     </form>

@@ -23,10 +23,12 @@ def scene_detect():
     # `get_scene_list` returns a list of start/end timecode pairs
     # for each scene that was found.
     scenes = scene_manager.get_scene_list()
+    #print(scenes)
 
     scene_list = []
     scene_list = save_images(scenes, video, 1, 1, "jpg", 95,
-                       image_name_template='$VIDEO_NAME-$SCENE_NUMBER', output_dir="http://localhost:8080/add/file")
+                       image_name_template='$VIDEO_NAME-$SCENE_NUMBER', )
+    print(scene_list)
     
     # for i in scene_list:
     #     im = Image.open('./' + str(scene_list[i][0]))
