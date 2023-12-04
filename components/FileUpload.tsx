@@ -2,7 +2,7 @@
 
 import { NextPage } from 'next';
 import Link from 'next/link';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../styles/globals.css';
 
 const BACKEND = 'http://localhost:8080/';
@@ -13,7 +13,7 @@ const FileUpload: NextPage<Props> = () => {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [videoType, setVideotype] = useState(false);
+  const [videoType, setVideotype] = useState<string | null>(null);
 
   const [fileId, setFileId] = useState<string | null>(null);
   const [fileName, setFilename] = useState<string | null>(null);
@@ -98,9 +98,9 @@ const FileUpload: NextPage<Props> = () => {
 
                     setPreviewUrl(URL.createObjectURL(file));
                     if (file.type[0] === 'v') {
-                      setVideotype(true);
+                      setVideotype('video');
                     } else if (file.type[0] === 'i') {
-                      setVideotype(false);
+                      setVideotype(null);
                     }
                   }
                 }}
@@ -114,7 +114,7 @@ const FileUpload: NextPage<Props> = () => {
             <Link
               href={{
                 pathname: '/tag',
-                query: { id: fileId },
+                query: { id: fileId, ftype: videoType },
               }}
             >
               <button

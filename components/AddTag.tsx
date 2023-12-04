@@ -1,6 +1,8 @@
 'use client';
 
 import { NextPage } from 'next';
+import Link from 'next/link';
+
 import { useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -25,31 +27,24 @@ interface Props {}
 const AddTag: NextPage<Props> = () => {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [videoType, setVideotype] = useState(false);
+  const [url, setUrl] = useState<string | null>(null);
+  const [videoType, setVideotype] = useState<string | null>(null);
 
   const [fileId, setFileId] = useState<string | null>(null);
   const [fileName, setFilename] = useState();
   const searchParams = useSearchParams();
 
-  console.log(searchParams.get('id'));
-
-  /**
-   * Cancel files
-   */
-  const onCancelFile = async () => {
-    if (!previewUrl && !file) {
-      return;
-    }
-    setFile(null);
-    setPreviewUrl(null);
-  };
+  //console.log(searchParams.get('id'));
 
   /**
    * Get Media from MeGraS
    */
   useEffect(() => {
     async function fetchMedia() {
+      setFileId(searchParams.get('id'));
+      setUrl(BACKEND + fileId);
+      setVideotype(searchParams.get('ftype'));
+
       let options = {
         method: 'POST',
         body: JSON.stringify({
@@ -68,7 +63,6 @@ const AddTag: NextPage<Props> = () => {
         data.results.forEach((res: any) => {
           console.log(res.p);
           if (res.p === '<http://megras.org/schema#fileName>') {
-            console.log(res.o.replace('^^String', ''));
             setFilename(res.o.replace('^^String', ''));
           }
         });
@@ -226,12 +220,12 @@ const AddTag: NextPage<Props> = () => {
         )}
 
         <div className="flex-grow">
-          {previewUrl ? (
+          {url ? (
             <div className="mx-auto w-80">
               {videoType ? (
                 <iframe
                   style={{ objectFit: 'cover' }}
-                  src={previewUrl}
+                  src={url}
                   width={320}
                   height={180}
                 ></iframe>
@@ -239,7 +233,7 @@ const AddTag: NextPage<Props> = () => {
                 <img
                   alt="image upload preview"
                   style={{ objectFit: 'cover' }}
-                  src={previewUrl}
+                  src={url}
                   width={320}
                   height={180}
                 ></img>
@@ -263,33 +257,23 @@ const AddTag: NextPage<Props> = () => {
                   <circle cx="10" cy="10" r="4" />
                 </g>
               </svg>
-              <strong className="text-sm font-medium text-black">
-                Select an image or a video
-              </strong>
-              <input
-                className="block h-0 w-0"
-                name="file"
-                type="file"
-                onChange={({ target }) => {
-                  if (target.files) {
-                    const file = target.files[0];
-                    /** Setting file state */
-                    setFile(file);
-
-                    setPreviewUrl(URL.createObjectURL(file));
-                    if (file.type[0] === 'v') {
-                      setVideotype(true);
-                    } else if (file.type[0] === 'i') {
-                      setVideotype(false);
-                    }
-                  }
-                }}
-              />
             </label>
           )}
         </div>
 
         <div className="justify-top mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+          <Link
+            href={{
+              pathname: '/exploration',
+            }}
+          >
+            <button
+              disabled={!fileId}
+              className="w-1/2 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-green-400 disabled:bg-gray-200 md:w-auto md:text-base"
+            >
+              Continue
+            </button>
+          </Link>
           <button
             disabled={!fileId}
             onClick={deleteMedia}

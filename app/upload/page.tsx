@@ -2,9 +2,8 @@
 
 import type { NextPage } from 'next';
 import FileUpload from '../../components/FileUpload';
-import AppContextProvider from '../../components/helpers/context';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 const Home: NextPage = () => {
   return (
@@ -12,9 +11,7 @@ const Home: NextPage = () => {
       <h1 className="text-xl font-bold text-black">Upload</h1>
       <main className="py-10">
         <div className="mx-auto w-full max-w-3xl px-3">
-          <AppContextProvider>
-            <FileUpload />
-          </AppContextProvider>
+          <FileUpload />
         </div>
       </main>
     </div>
