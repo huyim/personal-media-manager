@@ -5,6 +5,9 @@ import Link from 'next/link';
 
 import { useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
+import EmblaCarousel from '../ui/embla-carousel';
+import { EmblaOptionsType } from 'embla-carousel-react';
+import '../styles/embla.css';
 
 import { InferenceSession, Tensor } from 'onnxruntime-web';
 import '../styles/globals.css';
@@ -22,6 +25,11 @@ const BACKEND = 'http://localhost:8080/';
 const IMAGE_EMBEDDING = './_next/static/chunks/pages/dogs_embedding.npy';
 const MODEL_DIR = './_next/static/chunks/pages/sam_onnx_example.onnx';
 
+/* Media Gallery for Key Frames*/
+const OPTIONS: EmblaOptionsType = {};
+const SLIDE_COUNT = 5;
+const SLIDES = Array.from(Array(SLIDE_COUNT).keys());
+
 interface Props {}
 
 const AddTag: NextPage<Props> = () => {
@@ -33,8 +41,6 @@ const AddTag: NextPage<Props> = () => {
   const [fileId, setFileId] = useState<string | null>(null);
   const [fileName, setFilename] = useState();
   const searchParams = useSearchParams();
-
-  //console.log(searchParams.get('id'));
 
   /**
    * Get Media from MeGraS
@@ -58,7 +64,7 @@ const AddTag: NextPage<Props> = () => {
 
         if (response == undefined) return;
         let data = await response.json();
-        console.log(data.results);
+        console.log(data);
 
         data.results.forEach((res: any) => {
           console.log(res.p);
@@ -74,6 +80,9 @@ const AddTag: NextPage<Props> = () => {
     fetchMedia();
   });
 
+  /**
+   * Delete media from MeGraS
+   */
   const deleteMedia = async () => {
     try {
       let response = await fetch(BACKEND + '/' + fileId, {
@@ -204,10 +213,7 @@ const AddTag: NextPage<Props> = () => {
   };
 
   return (
-    <form
-      className="w-full border-gray-500 p-3"
-      onSubmit={(e) => e.preventDefault()}
-    >
+    <div className="w-full border-gray-500 p-3">
       <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
         {fileName ? (
           <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
@@ -288,8 +294,11 @@ const AddTag: NextPage<Props> = () => {
         <div className="mt-4 flex justify-center gap-1 text-black md:mt-0 md:flex-col">
           Key Frames
         </div>
-        <div className="mx-auto w-80">
+        {/* <div className="mx-auto w-80">
           <Stage />
+        </div> */}
+        <div className="mx-auto w-80">
+          <EmblaCarousel slides={SLIDES} options={OPTIONS} />
         </div>
       </div>
       <hr />
@@ -306,7 +315,7 @@ const AddTag: NextPage<Props> = () => {
           />
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 

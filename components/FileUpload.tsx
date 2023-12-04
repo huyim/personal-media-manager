@@ -36,12 +36,12 @@ const FileUpload: NextPage<Props> = () => {
     >
       <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
         {fileName ? (
-          <div className="justify-bottom mt-4 flex gap-1.5 text-black md:mt-0 md:flex-col">
-            {fileName}
+          <div className="justify-bottom mt-4 flex gap-1.5 text-green-900 md:mt-0 md:flex-col">
+            Filename: {fileName}
           </div>
         ) : (
           <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
-            fileinfo
+            ...
           </div>
         )}
 

@@ -25,6 +25,8 @@
     "copy-webpack-plugin": "^11.0.0",
     "date-fns": "2.29.3",
     "dinero.js": "2.0.0-alpha.8",
+    "embla-carousel-class-names": "^8.0.0-rc15",
+    "embla-carousel-react": "^8.0.0-rc15",
     "encoding": "^0.1.13",
     "formidable": "3.5.1",
     "mime": "3.0.0",
