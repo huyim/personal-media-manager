@@ -6,7 +6,7 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: {
     default: 'Personal Media Explorer',
-    template: '%s | Next.js App Router',
+    template: '%s',
   },
   description:
     'A playground to explore new Next.js App Router features such as nested layouts, instant loading states, streaming, and component level data fetching.',
@@ -28,7 +28,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="[color-scheme:dark]">
-      <body className="overflow-y-scroll bg-white pb-36">
+      <body
+        className="overflow-y-scroll bg-white pb-36"
+        suppressHydrationWarning={true}
+      >
         <GlobalNav />
 
         <div className="lg:pl-72">
