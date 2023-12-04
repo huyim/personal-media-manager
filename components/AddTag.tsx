@@ -8,6 +8,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import EmblaCarousel from '../ui/embla-carousel';
 import { EmblaOptionsType } from 'embla-carousel-react';
 import '../styles/embla.css';
+import { TagInput } from '@douyinfe/semi-ui';
 
 import { InferenceSession, Tensor } from 'onnxruntime-web';
 import '../styles/globals.css';
@@ -41,13 +42,13 @@ const AddTag: NextPage<Props> = () => {
   var FRAME_COUNT = 1;
   const FRAMES = Array.from(Array(FRAME_COUNT).keys());
 
-  let frame_img = [];
+  //var frame_img = [];
   // TEMP
-  // const frame_img = [
-  //   'http://localhost:8080/ix8HBwMDH__-IbInayjWJOU3rymRveDGsSe12mMmrD2EFv1j1jVBpyA',
-  //   'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
-  //   'http://localhost:8080/in7__n8iAAAFIfZ-2TQZJKAZa4rpbk3SsbRXqIiwCgs1VZ4qsGoSZ7A',
-  // ];
+  const frame_img = [
+    'http://localhost:8080/ix8HBwMDH__-IbInayjWJOU3rymRveDGsSe12mMmrD2EFv1j1jVBpyA',
+    'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
+    'http://localhost:8080/in7__n8iAAAFIfZ-2TQZJKAZa4rpbk3SsbRXqIiwCgs1VZ4qsGoSZ7A',
+  ];
 
   // Get frames or if image, just display image
   if (videoType === 'video') {
@@ -64,6 +65,14 @@ const AddTag: NextPage<Props> = () => {
       setFileId(searchParams.get('id'));
       setMediaUrl(BACKEND + fileId);
       setVideotype(searchParams.get('ftype'));
+
+      const seg_url = mediaUrl + '/segment/time/' + '0-2';
+      try {
+        let response = await fetch(seg_url);
+        console.log(response);
+      } catch (error: any) {
+        alert('ERROR');
+      }
 
       let options = {
         method: 'POST',
@@ -321,11 +330,12 @@ const AddTag: NextPage<Props> = () => {
           Tags
         </div>
         <div className="mx-auto w-80">
-          <input
-            type="search"
-            id="default-search"
-            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          <TagInput
+            draggable
+            defaultValue={[videoType!]}
+            allowDuplicates={false}
             placeholder="Add tags..."
+            onChange={(v) => console.log(v)}
           />
         </div>
       </div>
