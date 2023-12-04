@@ -35,16 +35,6 @@ const FileUpload: NextPage<Props> = () => {
       onSubmit={(e) => e.preventDefault()}
     >
       <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
-        {fileName ? (
-          <div className="justify-bottom mt-4 flex gap-1.5 text-green-900 md:mt-0 md:flex-col">
-            Filename: {fileName}
-          </div>
-        ) : (
-          <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
-            ...
-          </div>
-        )}
-
         <div className="flex-grow">
           {previewUrl ? (
             <div className="mx-auto w-80">
@@ -172,6 +162,15 @@ const FileUpload: NextPage<Props> = () => {
           </div>
         )}
       </div>
+      {fileName ? (
+        <div className="justify-bottom mt-4 flex gap-1.5 text-green-900 md:mt-0 md:flex-col">
+          Filename: {fileName}
+        </div>
+      ) : (
+        <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
+          ...
+        </div>
+      )}
     </form>
   );
 };

@@ -25,22 +25,36 @@ const BACKEND = 'http://localhost:8080/';
 const IMAGE_EMBEDDING = './_next/static/chunks/pages/dogs_embedding.npy';
 const MODEL_DIR = './_next/static/chunks/pages/sam_onnx_example.onnx';
 
-/* Media Gallery for Key Frames*/
-const OPTIONS: EmblaOptionsType = {};
-const SLIDE_COUNT = 5;
-const SLIDES = Array.from(Array(SLIDE_COUNT).keys());
-
 interface Props {}
 
 const AddTag: NextPage<Props> = () => {
   const [uploading, setUploading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [url, setUrl] = useState<string | null>(null);
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
   const [videoType, setVideotype] = useState<string | null>(null);
 
   const [fileId, setFileId] = useState<string | null>(null);
   const [fileName, setFilename] = useState();
   const searchParams = useSearchParams();
+
+  /* Media Gallery for Key Frames*/
+  const OPTIONS: EmblaOptionsType = {};
+  var FRAME_COUNT = 1;
+  const FRAMES = Array.from(Array(FRAME_COUNT).keys());
+
+  let frame_img = [];
+  // TEMP
+  // const frame_img = [
+  //   'http://localhost:8080/ix8HBwMDH__-IbInayjWJOU3rymRveDGsSe12mMmrD2EFv1j1jVBpyA',
+  //   'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
+  //   'http://localhost:8080/in7__n8iAAAFIfZ-2TQZJKAZa4rpbk3SsbRXqIiwCgs1VZ4qsGoSZ7A',
+  // ];
+
+  // Get frames or if image, just display image
+  if (videoType === 'video') {
+    console.log(videoType);
+  } else {
+    frame_img.push(mediaUrl!);
+  }
 
   /**
    * Get Media from MeGraS
@@ -48,7 +62,7 @@ const AddTag: NextPage<Props> = () => {
   useEffect(() => {
     async function fetchMedia() {
       setFileId(searchParams.get('id'));
-      setUrl(BACKEND + fileId);
+      setMediaUrl(BACKEND + fileId);
       setVideotype(searchParams.get('ftype'));
 
       let options = {
@@ -226,12 +240,12 @@ const AddTag: NextPage<Props> = () => {
         )}
 
         <div className="flex-grow">
-          {url ? (
+          {mediaUrl ? (
             <div className="mx-auto w-80">
               {videoType ? (
                 <iframe
                   style={{ objectFit: 'cover' }}
-                  src={url}
+                  src={mediaUrl}
                   width={320}
                   height={180}
                 ></iframe>
@@ -239,7 +253,7 @@ const AddTag: NextPage<Props> = () => {
                 <img
                   alt="image upload preview"
                   style={{ objectFit: 'cover' }}
-                  src={url}
+                  src={mediaUrl}
                   width={320}
                   height={180}
                 ></img>
@@ -297,8 +311,8 @@ const AddTag: NextPage<Props> = () => {
         {/* <div className="mx-auto w-80">
           <Stage />
         </div> */}
-        <div className="mx-auto w-80">
-          <EmblaCarousel slides={SLIDES} options={OPTIONS} />
+        <div className="mx-auto h-40 w-80">
+          <EmblaCarousel slides={FRAMES} options={OPTIONS} images={frame_img} />
         </div>
       </div>
       <hr />

@@ -1,23 +1,18 @@
 import React from 'react';
 import useEmblaCarousel, { EmblaOptionsType } from 'embla-carousel-react';
 import ClassNames from 'embla-carousel-class-names';
+import Image from 'next/image';
 
-const images = [
-  'http://localhost:8080/ix8HBwMDH__-IbInayjWJOU3rymRveDGsSe12mMmrD2EFv1j1jVBpyA',
-  'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
-  'http://localhost:8080/in7__n8iAAAFIfZ-2TQZJKAZa4rpbk3SsbRXqIiwCgs1VZ4qsGoSZ7A',
-];
-
-const imageByIndex = (index: number): string => images[index % images.length];
-
-type PropType = {
+type props = {
   slides: number[];
   options?: EmblaOptionsType;
+  images: string[];
 };
 
-const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options } = props;
+const EmblaCarousel: React.FC<props> = (props) => {
+  const { slides, options, images } = props;
   const [emblaRef] = useEmblaCarousel(options, [ClassNames()]);
+  const imageByIndex = (index: number): string => images[index % images.length];
 
   return (
     <div className="embla">
@@ -28,9 +23,11 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
               <div className="embla__slide__number">
                 <span>{index + 1}</span>
               </div>
-              <img
+              <Image
                 className="embla__slide__img"
                 src={imageByIndex(index)}
+                width={700}
+                height={700}
                 alt="key frames"
               />
             </div>
