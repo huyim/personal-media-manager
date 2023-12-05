@@ -39,7 +39,7 @@ const AddTag: NextPage<Props> = () => {
 
   /* Media Gallery for Key Frames*/
   const OPTIONS: EmblaOptionsType = {};
-  var FRAME_COUNT = 1;
+  var FRAME_COUNT = 3;
   const FRAMES = Array.from(Array(FRAME_COUNT).keys());
 
   //var frame_img = [];
@@ -315,7 +315,7 @@ const AddTag: NextPage<Props> = () => {
       <hr />
       <div className="flex flex-col gap-1 md:flex-row md:py-4">
         <div className="mt-4 flex justify-center gap-1 text-black md:mt-0 md:flex-col">
-          Key Frames
+          Tag Zone
         </div>
         {/* <div className="mx-auto w-80">
           <Stage />
@@ -324,21 +324,19 @@ const AddTag: NextPage<Props> = () => {
           <EmblaCarousel slides={FRAMES} options={OPTIONS} images={frame_img} />
         </div>
       </div>
-      <hr />
+      {/* <hr />
       <div className="flex flex-col gap-1.5 md:flex-row md:py-4">
         <div className="mt-4 flex justify-center gap-1.5 text-black md:mt-0 md:flex-col">
           Tags
         </div>
         <div className="mx-auto w-80">
           <TagInput
-            draggable
-            defaultValue={[videoType!]}
             allowDuplicates={false}
             placeholder="Add tags..."
             onChange={(v) => console.log(v)}
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

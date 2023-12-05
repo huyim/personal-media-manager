@@ -2,6 +2,7 @@ import React from 'react';
 import useEmblaCarousel, { EmblaOptionsType } from 'embla-carousel-react';
 import ClassNames from 'embla-carousel-class-names';
 import Image from 'next/image';
+import { TagInput } from '@douyinfe/semi-ui';
 
 type props = {
   slides: number[];
@@ -30,6 +31,13 @@ const EmblaCarousel: React.FC<props> = (props) => {
                 height={700}
                 alt="key frames"
               />
+              <div className="mx-auto w-60">
+                <TagInput
+                  allowDuplicates={false}
+                  placeholder="Add tags..."
+                  onChange={(v) => console.log(v)}
+                />
+              </div>
             </div>
           ))}
         </div>
