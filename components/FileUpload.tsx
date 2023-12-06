@@ -4,6 +4,7 @@ import { NextPage } from 'next';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import '../styles/globals.css';
+import { IconTickCircle, IconSpin } from '@douyinfe/semi-icons';
 
 const BACKEND = 'http://localhost:8080/';
 
@@ -163,11 +164,17 @@ const FileUpload: NextPage<Props> = () => {
         )}
       </div>
       {fileName ? (
-        <div className="justify-bottom mt-4 flex gap-1.5 text-green-900 md:mt-0 md:flex-col">
+        <div className="justify-bottom mt-4 flex gap-1.5  md:mt-0 md:flex-col">
           {fileId ? (
-            <div>Filename: {fileName} uploaded successfully!</div>
+            <div className="text-green-900">
+              <IconTickCircle style={{ color: '#1B5E20' }} />
+              Filename: {fileName} uploaded successfully!
+            </div>
           ) : (
-            <div>Filename: {fileName} uploading...</div>
+            <div className="text-blue-900">
+              <IconSpin spin style={{ color: '#0D47A1' }} />
+              Filename: {fileName} uploading...
+            </div>
           )}
         </div>
       ) : (
