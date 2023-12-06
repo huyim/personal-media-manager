@@ -66,6 +66,13 @@ const AddTag: NextPage<Props> = () => {
       setMediaUrl(BACKEND + fileId);
       setVideotype(searchParams.get('ftype'));
 
+      // try {
+      //   let response = await fetch("http:localhost:5050/api/scene");
+      //   console.log(response);
+      // } catch (error: any) {
+      //   alert('ERROR');
+      // }
+
       const seg_url = mediaUrl + '/segment/time/' + '0-2';
       try {
         let response = await fetch(seg_url);

@@ -99,7 +99,7 @@ const FileUpload: NextPage<Props> = () => {
           )}
         </div>
 
-        {fileId ? (
+        {fileName ? (
           <div className="justify-top mt-4 flex gap-1.5 md:mt-0 md:flex-col">
             <Link
               href={{
@@ -164,7 +164,11 @@ const FileUpload: NextPage<Props> = () => {
       </div>
       {fileName ? (
         <div className="justify-bottom mt-4 flex gap-1.5 text-green-900 md:mt-0 md:flex-col">
-          Filename: {fileName}
+          {fileId ? (
+            <div>Filename: {fileName} uploaded successfully!</div>
+          ) : (
+            <div>Filename: {fileName} uploading...</div>
+          )}
         </div>
       ) : (
         <div className="justify-bottom mt-4 flex gap-1.5 md:mt-0 md:flex-col">
