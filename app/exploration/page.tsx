@@ -1,4 +1,11 @@
-export default function Page() {
+'use client';
+
+import type { NextPage } from 'next';
+import MediaGraph from '../../components/MediaGraph';
+
+import React from 'react';
+
+const Home: NextPage = () => {
   return (
     <div className="prose prose-sm prose-invert max-w-none">
       <h1 className="text-center text-xl font-bold text-black">
@@ -11,6 +18,12 @@ export default function Page() {
         placeholder="Search tags..."
         required
       />
+      <br />
+      <div className="mx-auto w-full max-w-3xl px-3">
+        <MediaGraph />
+      </div>
     </div>
   );
-}
+};
+
+export default Home;

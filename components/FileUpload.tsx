@@ -5,6 +5,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import '../styles/globals.css';
 import { IconTickCircle, IconSpin } from '@douyinfe/semi-icons';
+import { Image } from '@douyinfe/semi-ui';
 
 const BACKEND = 'http://localhost:8080/';
 
@@ -47,13 +48,12 @@ const FileUpload: NextPage<Props> = () => {
                   height={180}
                 ></iframe>
               ) : (
-                <img
+                <Image
                   alt="image upload preview"
-                  style={{ objectFit: 'cover' }}
                   src={previewUrl}
-                  width={320}
-                  height={180}
-                ></img>
+                  width={360}
+                  height={280}
+                />
               )}
             </div>
           ) : (
