@@ -12,7 +12,33 @@ const Node: React.FC<NodeProps> = ({ url, type }) => {
   const fileId = url.split('/')[3];
 
   if (type === 'img') {
-    return <img src={url} alt="" style={{ width: '100px', height: '100px' }} />;
+    return (
+      <Card
+        shadows="hover"
+        style={{ maxWidth: 280, backgroundColor: '#EEF0E5' }}
+        bodyStyle={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+        cover={<img src={url} />}
+      >
+        <Space align="start">
+          <Button theme="solid" type="primary" size="small">
+            Usage
+          </Button>
+          <Link
+            href={{
+              pathname: '/tag',
+              query: { id: fileId, ftype: type },
+            }}
+          >
+            <Button theme="borderless" type="primary" size="small">
+              Edit
+            </Button>
+          </Link>
+        </Space>
+      </Card>
+    );
   } else if (type === 'video') {
     return (
       <Card
@@ -22,7 +48,7 @@ const Node: React.FC<NodeProps> = ({ url, type }) => {
           display: 'flex',
           alignItems: 'center',
         }}
-        cover={<video src={url} />}
+        cover={<video controls src={url} />}
       >
         <Space align="start">
           <Button theme="solid" type="primary" size="small">
@@ -54,8 +80,8 @@ const MediaGraph = () => {
       type: 'video',
     },
     {
-      url: 'http://localhost:8080/v96cgPsS2EDdb5eNhd9eYwAk3dB5r2BgfeW696kbrF48',
-      type: 'video',
+      url: 'http://localhost:8080/icGAZPj4PDx_7JrTZ340q_rBlXiVCtMlUdx3MYOa9rhBV86jQo_tjeA',
+      type: 'img',
     },
     // more nodes...
   ]);

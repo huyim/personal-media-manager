@@ -8,7 +8,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import EmblaCarousel from '../ui/embla-carousel';
 import { EmblaOptionsType } from 'embla-carousel-react';
 import '../styles/embla.css';
-import { TagInput, Slider } from '@douyinfe/semi-ui';
+import { Button, Slider } from '@douyinfe/semi-ui';
+import { Player, ControlBar, BigPlayButton } from 'video-react';
 
 import { InferenceSession, Tensor } from 'onnxruntime-web';
 import '../styles/globals.css';
@@ -21,6 +22,7 @@ import AppContext from './helpers/createContext';
 const ort = require('onnxruntime-web');
 /* @ts-ignore */
 import npyjs from 'npyjs';
+import { stringify } from 'querystring';
 
 const BACKEND = 'http://localhost:8080/';
 const IMAGE_EMBEDDING = './_next/static/chunks/pages/dogs_embedding.npy';
@@ -35,14 +37,16 @@ const AddTag: NextPage<Props> = () => {
 
   const [fileId, setFileId] = useState<string | null>(null);
   const [fileName, setFilename] = useState();
+  const [rangeValue, setRangeValue] = useState<string | undefined>(undefined);
   const searchParams = useSearchParams();
 
   /* Media Gallery for Key Frames*/
   const OPTIONS: EmblaOptionsType = {};
-  var FRAME_COUNT = 1;
-  const FRAMES = Array.from(Array(FRAME_COUNT).keys());
 
   var frame_img = [''];
+  var FRAME_COUNT = frame_img.length;
+  const FRAMES = Array.from(Array(FRAME_COUNT).keys());
+
   // TEMP
   // const frame_img = [
   //   'http://localhost:8080/ix8HBwMDH__-IbInayjWJOU3rymRveDGsSe12mMmrD2EFv1j1jVBpyA',
@@ -53,8 +57,9 @@ const AddTag: NextPage<Props> = () => {
   // Get frames or if image, just display image
   if (videoType === 'video') {
     console.log(videoType);
-  } else {
+  } else if (videoType === 'image') {
     frame_img.push(mediaUrl!);
+    frame_img.shift();
   }
 
   /**
@@ -73,13 +78,13 @@ const AddTag: NextPage<Props> = () => {
       //   alert('ERROR');
       // }
 
-      const seg_url = mediaUrl + '/segment/time/' + '0-2';
-      try {
-        let response = await fetch(seg_url);
-        console.log(response);
-      } catch (error: any) {
-        alert('ERROR');
-      }
+      // const seg_url = mediaUrl + '/segment/time/' + '0-2';
+      // try {
+      //   let response = await fetch(seg_url);
+      //   console.log(response);
+      // } catch (error: any) {
+      //   alert('ERROR');
+      // }
 
       let options = {
         method: 'POST',
@@ -165,10 +170,7 @@ const AddTag: NextPage<Props> = () => {
     initModel();
 
     // Load the image
-    const url = new URL(
-      BACKEND + 'iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
-      location.origin,
-    );
+    const url = new URL(BACKEND + fileId, location.origin);
     loadImage(url);
 
     // Load the Segment Anything pre-computed embedding
@@ -257,31 +259,51 @@ const AddTag: NextPage<Props> = () => {
 
         <div className="flex-grow">
           {mediaUrl ? (
-            <div className="mx-auto w-80">
+            <div className="mx-auto w-80 ">
               {videoType === 'video' ? (
                 <div>
                   <video
-                    style={{ objectFit: 'cover' }}
                     controls
                     src={mediaUrl}
                     width={320}
                     height={180}
-                  />
-                  {/* <div className=" text-black">Add Clips</div>
+                  ></video>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      try {
+                        let url =
+                          BACKEND +
+                          fileId +
+                          '/segment/time/' +
+                          rangeValue?.replace(',', '-');
+                        let response = fetch(url);
+                        frame_img.push(url);
+                      } catch (error: any) {
+                        console.log(error);
+                      }
+                    }}
+                  >
+                    Add Clips
+                  </Button>
                   <Slider
+                    max={1}
                     defaultValue={[0, 100]}
-                    tipFormatter={(v) => `${v}°C`}
+                    tipFormatter={(v) => `${v}`}
                     range={true}
-                    getAriaValueText={(value) => `${value}°C`}
-                  ></Slider> */}
+                    step={0.1}
+                    getAriaValueText={(value) => `${value}`}
+                    onAfterChange={(v) => {
+                      setRangeValue(v?.toString());
+                    }}
+                  ></Slider>
                 </div>
               ) : (
                 <img
                   alt="image upload preview"
-                  style={{ objectFit: 'cover' }}
                   src={mediaUrl}
-                  width={320}
-                  height={180}
+                  width={260}
+                  height={90}
                 ></img>
               )}
             </div>
@@ -338,7 +360,12 @@ const AddTag: NextPage<Props> = () => {
           <Stage />
         </div> */}
         <div className="mx-auto h-40 w-80">
-          <EmblaCarousel slides={FRAMES} options={OPTIONS} images={frame_img} />
+          <EmblaCarousel
+            slides={FRAMES}
+            options={OPTIONS}
+            images={frame_img}
+            mediatype={videoType}
+          />
         </div>
       </div>
       {/* <hr />
