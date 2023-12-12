@@ -27,6 +27,7 @@ import { stringify } from 'querystring';
 const BACKEND = 'http://localhost:8080/';
 const IMAGE_EMBEDDING = './_next/static/chunks/pages/dogs_embedding.npy';
 const MODEL_DIR = './_next/static/chunks/pages/sam_onnx_example.onnx';
+var frame_img = [''];
 
 interface Props {}
 
@@ -43,7 +44,6 @@ const AddTag: NextPage<Props> = () => {
   /* Media Gallery for Key Frames*/
   const OPTIONS: EmblaOptionsType = {};
 
-  var frame_img = [''];
   var FRAME_COUNT = frame_img.length;
   const FRAMES = Array.from(Array(FRAME_COUNT).keys());
 
