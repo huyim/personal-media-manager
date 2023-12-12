@@ -26,7 +26,7 @@ const EmblaCarousel: React.FC<props> = (props) => {
   const [emblaRef] = useEmblaCarousel(options, [ClassNames()]);
   const imageByIndex = (index: number): string => images[index % images.length];
   const [dimensions] = useImageSize(imageByIndex(0));
-  console.log(dimensions);
+  console.log(imageByIndex(0));
 
   return (
     <div className="embla">
@@ -39,6 +39,7 @@ const EmblaCarousel: React.FC<props> = (props) => {
               </div>
               {mediatype === 'video' ? (
                 <video
+                  controls
                   src={imageByIndex(index)}
                   width={320}
                   height={180}

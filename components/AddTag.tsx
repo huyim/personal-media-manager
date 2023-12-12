@@ -279,6 +279,10 @@ const AddTag: NextPage<Props> = () => {
                           rangeValue?.replace(',', '-');
                         let response = fetch(url);
                         frame_img.push(url);
+                        if (frame_img[0] === '') {
+                          frame_img.shift();
+                        }
+                        console.log(frame_img);
                       } catch (error: any) {
                         console.log(error);
                       }
@@ -291,7 +295,7 @@ const AddTag: NextPage<Props> = () => {
                     defaultValue={[0, 100]}
                     tipFormatter={(v) => `${v}`}
                     range={true}
-                    step={0.1}
+                    step={0.01}
                     getAriaValueText={(value) => `${value}`}
                     onAfterChange={(v) => {
                       setRangeValue(v?.toString());
