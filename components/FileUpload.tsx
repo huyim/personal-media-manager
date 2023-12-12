@@ -40,7 +40,7 @@ const FileUpload: NextPage<Props> = () => {
         <div className="flex-grow">
           {previewUrl ? (
             <div className="mx-auto w-80">
-              {videoType ? (
+              {videoType === 'video' ? (
                 <iframe
                   style={{ objectFit: 'cover' }}
                   src={previewUrl}
@@ -91,7 +91,7 @@ const FileUpload: NextPage<Props> = () => {
                     if (file.type[0] === 'v') {
                       setVideotype('video');
                     } else if (file.type[0] === 'i') {
-                      setVideotype(null);
+                      setVideotype('image');
                     }
                   }
                 }}
@@ -138,7 +138,7 @@ const FileUpload: NextPage<Props> = () => {
                     body: formData,
                   })
                     .then((response) => response.json())
-                    .then((formData) => {
+                    .then((formData: any) => {
                       setFileId(formData[filename]['uri']);
                     });
                   console.log('File was uploaded successfully:', file['name']);

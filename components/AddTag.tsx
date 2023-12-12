@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import EmblaCarousel from '../ui/embla-carousel';
 import { EmblaOptionsType } from 'embla-carousel-react';
 import '../styles/embla.css';
-import { TagInput } from '@douyinfe/semi-ui';
+import { TagInput, Slider } from '@douyinfe/semi-ui';
 
 import { InferenceSession, Tensor } from 'onnxruntime-web';
 import '../styles/globals.css';
@@ -39,16 +39,16 @@ const AddTag: NextPage<Props> = () => {
 
   /* Media Gallery for Key Frames*/
   const OPTIONS: EmblaOptionsType = {};
-  var FRAME_COUNT = 3;
+  var FRAME_COUNT = 1;
   const FRAMES = Array.from(Array(FRAME_COUNT).keys());
 
-  //var frame_img = [];
+  var frame_img = [''];
   // TEMP
-  const frame_img = [
-    'http://localhost:8080/ix8HBwMDH__-IbInayjWJOU3rymRveDGsSe12mMmrD2EFv1j1jVBpyA',
-    'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
-    'http://localhost:8080/in7__n8iAAAFIfZ-2TQZJKAZa4rpbk3SsbRXqIiwCgs1VZ4qsGoSZ7A',
-  ];
+  // const frame_img = [
+  //   'http://localhost:8080/ix8HBwMDH__-IbInayjWJOU3rymRveDGsSe12mMmrD2EFv1j1jVBpyA',
+  //   'http://localhost:8080/iACDw-fH8_P5yVsZCvKus8et4qhYQ70NJZHzUEoTDdr-ZHM1AttlCug',
+  //   'http://localhost:8080/in7__n8iAAAFIfZ-2TQZJKAZa4rpbk3SsbRXqIiwCgs1VZ4qsGoSZ7A',
+  // ];
 
   // Get frames or if image, just display image
   if (videoType === 'video') {
@@ -258,13 +258,23 @@ const AddTag: NextPage<Props> = () => {
         <div className="flex-grow">
           {mediaUrl ? (
             <div className="mx-auto w-80">
-              {videoType ? (
-                <iframe
-                  style={{ objectFit: 'cover' }}
-                  src={mediaUrl}
-                  width={320}
-                  height={180}
-                ></iframe>
+              {videoType === 'video' ? (
+                <div>
+                  <video
+                    style={{ objectFit: 'cover' }}
+                    controls
+                    src={mediaUrl}
+                    width={320}
+                    height={180}
+                  />
+                  {/* <div className=" text-black">Add Clips</div>
+                  <Slider
+                    defaultValue={[0, 100]}
+                    tipFormatter={(v) => `${v}°C`}
+                    range={true}
+                    getAriaValueText={(value) => `${value}°C`}
+                  ></Slider> */}
+                </div>
               ) : (
                 <img
                   alt="image upload preview"
