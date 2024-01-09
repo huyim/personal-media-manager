@@ -1,96 +1,120 @@
-import React, { useState } from 'react';
-import { Card, Space, Button } from '@douyinfe/semi-ui';
-import Link from 'next/link';
+import React, { useState, useEffect, useCallback } from 'react';
+import ReactFlow, {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  MiniMap,
+  Controls,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
 
-// Node component
-interface NodeProps {
-  url: string;
-  type: string;
-}
+import CustomNode from './CustomNode';
 
-const Node: React.FC<NodeProps> = ({ url, type }) => {
-  const fileId = url.split('/')[3];
+const initBgColor = '#FFFFFF';
 
-  if (type === 'img') {
-    return (
-      <Card
-        shadows="hover"
-        style={{ maxWidth: 280, backgroundColor: '#EEF0E5' }}
-        bodyStyle={{
-          display: 'flex',
-          alignItems: 'center',
-        }}
-        cover={<img src={url} />}
-      >
-        <Space align="start">
-          <Button theme="solid" type="primary" size="small">
-            Usage
-          </Button>
-          <Link
-            href={{
-              pathname: '/tag',
-              query: { id: fileId, ftype: type },
-            }}
-          >
-            <Button theme="borderless" type="primary" size="small">
-              Edit
-            </Button>
-          </Link>
-        </Space>
-      </Card>
-    );
-  } else if (type === 'video') {
-    return (
-      <Card
-        shadows="hover"
-        style={{ maxWidth: 280, backgroundColor: '#EEF0E5' }}
-        bodyStyle={{
-          display: 'flex',
-          alignItems: 'center',
-        }}
-        cover={<video controls src={url} />}
-      >
-        <Space align="start">
-          <Button theme="solid" type="primary" size="small">
-            Usage
-          </Button>
-          <Link
-            href={{
-              pathname: '/tag',
-              query: { id: fileId, ftype: type },
-            }}
-          >
-            <Button theme="borderless" type="primary" size="small">
-              Edit
-            </Button>
-          </Link>
-        </Space>
-      </Card>
-    );
-  } else {
-    return null;
-  }
+const connectionLineStyle = { stroke: '#fff' };
+const nodeTypes = {
+  selectorNode: CustomNode,
 };
 
-// Graph component
-const MediaGraph = () => {
-  const [data, setData] = useState([
-    {
-      url: 'http://localhost:8080/vX5nOIzU86CW302_2-Gj5YuUG_cDqs6l0yqsJ1cY18A4',
-      type: 'video',
-    },
-    {
-      url: 'http://localhost:8080/icGAZPj4PDx_7JrTZ340q_rBlXiVCtMlUdx3MYOa9rhBV86jQo_tjeA',
-      type: 'img',
-    },
-    // more nodes...
-  ]);
+const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
+const MediaGraph = () => {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [bgColor, setBgColor] = useState(initBgColor);
+
+  useEffect(() => {
+    const onChange = (event: any) => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id !== '2') {
+            return node;
+          }
+
+          const color = event.target.value;
+
+          setBgColor(color);
+
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              color,
+            },
+          };
+        }),
+      );
+    };
+
+    setNodes([
+      {
+        id: '1',
+        type: 'input',
+        data: { label: 'Some labels' },
+        position: { x: 0, y: 50 },
+      },
+      {
+        id: '2',
+        type: 'selectorNode',
+        data: { onChange: onChange, color: initBgColor },
+        style: { border: '1px solid #777', padding: 10 },
+        position: { x: -100, y: 100 },
+      },
+    ]);
+
+    setEdges([
+      {
+        id: 'e1-2',
+        source: '1',
+        target: '2',
+        animated: true,
+        style: { stroke: '#fff' },
+      },
+      {
+        id: 'e2a-3',
+        source: '2',
+        target: '3',
+        sourceHandle: 'a',
+        animated: true,
+        style: { stroke: '#fff' },
+      },
+      {
+        id: 'e2b-4',
+        source: '2',
+        target: '4',
+        sourceHandle: 'b',
+        animated: true,
+        style: { stroke: '#fff' },
+      },
+    ]);
+  }, []);
+
+  const onConnect = useCallback(
+    (params: any) =>
+      setEdges((eds) =>
+        addEdge({ ...params, animated: true, style: { stroke: '#fff' } }, eds),
+      ),
+    [],
+  );
   return (
-    <div>
-      {data.map((node, index) => (
-        <Node key={index} url={node.url} type={node.type} />
-      ))}
+    <div style={{ position: 'fixed', width: '55%', height: '75%' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        style={{ background: bgColor }}
+        nodeTypes={nodeTypes}
+        connectionLineStyle={connectionLineStyle}
+        defaultViewport={defaultViewport}
+        fitView
+        attributionPosition="bottom-left"
+      >
+        <MiniMap />
+        <Controls />
+      </ReactFlow>
     </div>
   );
 };

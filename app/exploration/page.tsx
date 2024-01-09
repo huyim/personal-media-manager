@@ -19,9 +19,9 @@ const Home: NextPage = () => {
         required
       />
       <br />
-      <div className="mx-auto w-full max-w-3xl px-3">
-        <MediaGraph />
-      </div>
+      {/* <div className="mx-auto w-full max-w-3xl px-3"> */}
+      <MediaGraph />
+      {/* </div> */}
     </div>
   );
 };
