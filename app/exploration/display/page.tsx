@@ -1,3 +1,6 @@
+'use client';
+
+import { useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useCallback } from 'react';
 import ReactFlow, {
   useNodesState,
@@ -8,7 +11,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-import VideoNode from './VideoNode';
+import VideoNode from '../../../components/VideoNode';
 
 const initBgColor = '#FFFFFF';
 
@@ -19,15 +22,17 @@ const nodeTypes = {
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
-const MediaGraph = () => {
+const MediaDisplay = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [bgColor, setBgColor] = useState(initBgColor);
-  const [input, setInput] = useState();
+  // const [tag, setTag] = useState<string[] | null>(null);
 
-  const handleChange = (event: any) => {
-    setInput(event.target.value);
-  };
+  // const searchParams = useSearchParams();
+
+  // useEffect(() => {
+  //   setTag(searchParams.get('tag'));
+  // });
 
   useEffect(() => {
     const onChange = (event: any) => {
@@ -56,7 +61,7 @@ const MediaGraph = () => {
       {
         id: '1',
         type: 'input',
-        data: { label: 'Zurich' },
+        data: { label: 'Switzerland, City, Zurich' },
         position: { x: 0, y: 50 },
       },
       {
@@ -114,38 +119,24 @@ const MediaGraph = () => {
   );
   return (
     <div style={{ position: 'fixed', width: '55%', height: '75%' }}>
-      <input
-        type="search"
-        id="search"
-        value={input}
-        onChange={handleChange}
-        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        placeholder="Search tags..."
-        required
-      />
-      <br />
-      {input ? (
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          style={{ background: bgColor }}
-          nodeTypes={nodeTypes}
-          connectionLineStyle={connectionLineStyle}
-          defaultViewport={defaultViewport}
-          fitView
-          attributionPosition="bottom-left"
-        >
-          <MiniMap />
-          <Controls />
-        </ReactFlow>
-      ) : (
-        <div>Search tags to get graph...</div>
-      )}
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        style={{ background: bgColor }}
+        nodeTypes={nodeTypes}
+        connectionLineStyle={connectionLineStyle}
+        defaultViewport={defaultViewport}
+        fitView
+        attributionPosition="bottom-left"
+      >
+        <MiniMap />
+        <Controls />
+      </ReactFlow>
     </div>
   );
 };
 
-export default MediaGraph;
+export default MediaDisplay;

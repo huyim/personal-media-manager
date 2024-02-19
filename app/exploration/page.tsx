@@ -1,7 +1,7 @@
 'use client';
 
 import type { NextPage } from 'next';
-import MediaGraph from '../../components/MediaGraph';
+import MediaSearch from '../../components/MediaSearch';
 
 import React, { useState } from 'react';
 
@@ -30,7 +30,7 @@ const Home: NextPage = () => {
         <br /> */}
 
         {/* <div className="mx-auto w-full max-w-3xl px-3"> */}
-        <MediaGraph />
+        <MediaSearch />
         {/* </div> */}
       </div>
     </div>
