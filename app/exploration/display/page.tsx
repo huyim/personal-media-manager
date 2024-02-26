@@ -13,7 +13,7 @@ import 'reactflow/dist/style.css';
 
 import VideoNode from '../../../components/VideoNode';
 
-const initBgColor = '#FFFFFF';
+const BACKEND = 'http://localhost:8080/';
 
 const connectionLineStyle = { stroke: '#000' };
 const nodeTypes = {
@@ -23,64 +23,59 @@ const nodeTypes = {
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 const MediaDisplay = () => {
+  const [queryResult, setQueryResult] = useState<string | null>(null);
+
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [bgColor, setBgColor] = useState(initBgColor);
-  // const [tag, setTag] = useState<string[] | null>(null);
+  const [tag, setTag] = useState<string | null>(null);
 
-  // const searchParams = useSearchParams();
-
-  // useEffect(() => {
-  //   setTag(searchParams.get('tag'));
-  // });
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const onChange = (event: any) => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id !== '2') {
-            return node;
-          }
+    setTag(searchParams.get('tag'));
 
-          const color = event.target.value;
-
-          setBgColor(color);
-
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              color,
-            },
-          };
+    async function query() {
+      let options = {
+        method: 'POST',
+        body: JSON.stringify({
+          s: [],
+          p: ['<https://schema.org/category>'],
+          o: [tag + '^^String'],
         }),
-      );
-    };
+      };
 
+      try {
+        let response = await fetch(BACKEND + 'query/quads', options);
+
+        if (response == undefined) return;
+        let data = await response.json();
+
+        data.results.forEach((res: any) => {
+          setQueryResult(res.s.replace('<', '').replace('>', ''));
+        });
+        console.log(data);
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+    query();
+  });
+
+  useEffect(() => {
     setNodes([
       {
         id: '1',
         type: 'input',
-        data: { label: 'Switzerland, City, Zurich' },
+        data: { label: tag },
         position: { x: 0, y: 50 },
       },
       {
         id: '2',
         type: 'videoNode',
         data: {
-          onChange: onChange,
-          url: 'http://localhost:8080/v96cgPsS2EDdb5eNhd9eYwAk3dB5r2BgfeW696kbrF48',
+          url: queryResult,
         },
         position: { x: -100, y: 100 },
-      },
-      {
-        id: '3',
-        type: 'videoNode',
-        data: {
-          onChange: onChange,
-          url: '<http://localhost:8080/v96cgPsS2EDdb5eNhd9eYwAk3dB5r2BgfeW696kbrF48/c/12li--VEhzOhVAFIc2DV2g>',
-        },
-        position: { x: 120, y: 100 },
       },
     ]);
 
@@ -99,16 +94,8 @@ const MediaDisplay = () => {
         animated: true,
         style: { stroke: '#000' },
       },
-      {
-        id: 'e2b-4',
-        source: '2',
-        target: '4',
-        sourceHandle: 'b',
-        animated: true,
-        style: { stroke: '#000' },
-      },
     ]);
-  }, []);
+  });
 
   const onConnect = useCallback(
     (params: any) =>
@@ -125,7 +112,6 @@ const MediaDisplay = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        style={{ background: bgColor }}
         nodeTypes={nodeTypes}
         connectionLineStyle={connectionLineStyle}
         defaultViewport={defaultViewport}

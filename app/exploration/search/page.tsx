@@ -14,6 +14,8 @@ import {
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+const BACKEND = 'http://localhost:8080/';
+
 const Home: NextPage = () => {
   const [tag, setTag] = useState<string | null>(null);
 
@@ -150,7 +152,7 @@ const Home: NextPage = () => {
         <Link
           href={{
             pathname: '/exploration/display',
-            //query: { tagList: tagList[ },
+            query: { tag: tag },
           }}
         >
           <button className="w-1/2 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-blue-500 disabled:bg-gray-200 md:w-auto md:text-base">

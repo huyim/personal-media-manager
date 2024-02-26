@@ -65,7 +65,7 @@ const EmblaCarousel: React.FC<props> = (props) => {
                         quads: [
                           {
                             s: '<' + imageByIndex(index) + '>',
-                            p: '<https://schema.org/caption>',
+                            p: '<https://schema.org/category>',
                             o: v[v.length - 1] + '^^String',
                           },
                         ],

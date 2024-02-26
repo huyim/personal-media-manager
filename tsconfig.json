@@ -29,7 +29,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "/api/upload.ts"
+    "/api/upload.ts",
+    "components/VideoNode.js"
   ],
   "exclude": ["node_modules"]
 }

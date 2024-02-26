@@ -1,18 +1,11 @@
 import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
-function CustomNode({}) {
+export default memo(({ data }) => {
   return (
     <div className="rounded-md border-2 border-stone-400 bg-white px-4 py-2 shadow-md">
       <div className="flex">
-        <video
-          controls
-          src={
-            'http://localhost:8080/v96cgPsS2EDdb5eNhd9eYwAk3dB5r2BgfeW696kbrF48'
-          }
-          width={320}
-          height={180}
-        ></video>
+        <video controls src={data.url} width={320} height={180}></video>
       </div>
 
       <Handle
@@ -27,6 +20,4 @@ function CustomNode({}) {
       />
     </div>
   );
-}
-
-export default memo(CustomNode);
+});
