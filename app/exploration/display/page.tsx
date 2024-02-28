@@ -32,7 +32,7 @@ const MediaDisplay = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    setTag(searchParams.get('tag'));
+    setTag(searchParams.get('queries'));
 
     async function query() {
       let options = {
