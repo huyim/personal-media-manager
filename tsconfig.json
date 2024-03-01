@@ -30,7 +30,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "/api/upload.ts",
-    "components/VideoNode.js"
+    "components/VideoNode.js",
+    "components/ImageNode.js"
   ],
   "exclude": ["node_modules"]
 }

@@ -80,15 +80,19 @@ const Home: NextPage = () => {
     },
     {
       id: '2',
-      label: 'Mountains',
+      label: 'Time',
     },
     {
       id: '3',
-      label: 'City',
+      label: 'Locations',
     },
     {
       id: '4',
-      label: 'Public Place',
+      label: 'People',
+    },
+    {
+      id: '5',
+      label: 'Events',
     },
     {
       id: '31',
@@ -109,19 +113,25 @@ const Home: NextPage = () => {
       source: '1',
       target: '2',
       id: '1-2',
-      label: '1-2',
+      label: 'Time',
     },
     {
       source: '1',
       target: '3',
       id: '1-3',
-      label: '1-3',
+      label: 'Locations',
     },
     {
       source: '1',
       target: '4',
       id: '1-4',
-      label: '1-4',
+      label: 'People',
+    },
+    {
+      source: '1',
+      target: '5',
+      id: '1-5',
+      label: 'Events',
     },
     {
       source: '3',
@@ -191,6 +201,7 @@ const Home: NextPage = () => {
       <div style={{ position: 'fixed', width: '55%', height: '75%' }}>
         <GraphCanvas
           ref={graphRef}
+          labelType="all"
           nodes={nodes}
           edges={edges}
           // selections={selections}

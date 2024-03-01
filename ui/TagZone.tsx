@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useEmblaCarousel, { EmblaOptionsType } from 'embla-carousel-react';
 import ClassNames from 'embla-carousel-class-names';
 import Image from 'next/image';
-import { TagInput } from '@douyinfe/semi-ui';
+import { TagInput, Cascader } from '@douyinfe/semi-ui';
+
 import { useImageSize } from 'react-image-size';
+import { Dataset } from './category';
 
 type props = {
   slides: number[];
@@ -14,19 +16,16 @@ type props = {
 
 const BACKEND = 'http://localhost:8080/';
 
-const sendCaption = async () => {
-  // if (response == undefined) return
-  // if (response.ok) {
-  //     setCaptions([tempCaption])
-  // }
-};
-
 const EmblaCarousel: React.FC<props> = (props) => {
   const { slides, options, images, mediatype } = props;
   const [emblaRef] = useEmblaCarousel(options, [ClassNames()]);
   const imageByIndex = (index: number): string => images[index % images.length];
   const [dimensions] = useImageSize(imageByIndex(0));
-  console.log(imageByIndex(0));
+
+  const [value, setValue] = useState('Search or select...');
+  const onChange = (val: any) => {
+    setValue(val);
+  };
 
   return (
     <div className="embla">
@@ -55,10 +54,37 @@ const EmblaCarousel: React.FC<props> = (props) => {
               )}
 
               <div className="mx-auto w-60">
-                <TagInput
+                {/* <TagInput
                   allowDuplicates={false}
                   placeholder="Add tags..."
                   onChange={(v) => {
+                    var options = {
+                      method: 'POST',
+                      body: JSON.stringify({
+                        quads: [
+                          {
+                            s: '<' + imageByIndex(index) + '>',
+                            p: '<https://schema.org/category>',
+                            o: v[v.length - 1] + '^^String',
+                          },
+                        ],
+                      }),
+                    };
+                    console.log(v[v.length - 1]);
+                    try {
+                      let response = fetch(BACKEND + 'add/quads', options);
+                    } catch (error: any) {
+                      console.log(error);
+                    }
+                  }}
+                /> */}
+                <Cascader
+                  style={{ width: 250 }}
+                  treeData={Dataset}
+                  placeholder="Search or select..."
+                  multiple
+                  filterTreeNode
+                  onChange={(v: any) => {
                     var options = {
                       method: 'POST',
                       body: JSON.stringify({

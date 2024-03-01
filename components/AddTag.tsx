@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
-import EmblaCarousel from '../ui/embla-carousel';
+import TagZone from '../ui/TagZone';
 import { EmblaOptionsType } from 'embla-carousel-react';
 import '../styles/embla.css';
 import { Button, Slider } from '@douyinfe/semi-ui';
@@ -364,7 +364,7 @@ const AddTag: NextPage<Props> = () => {
           <Stage />
         </div> */}
         <div className="mx-auto h-40 w-80">
-          <EmblaCarousel
+          <TagZone
             slides={FRAMES}
             options={OPTIONS}
             images={frame_img}
