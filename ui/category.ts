@@ -6,35 +6,39 @@ export const Dataset = [
     children: [
       {
         label: 'City',
-        value: 'city',
+        value: 'City',
 
         children: [
           {
             label: 'Zurich',
-            value: 'zurich',
+            value: 'Zurich',
           },
           {
             label: 'Basel',
-            value: 'basel',
+            value: 'Basel',
           },
           {
             label: 'Geneva',
-            value: 'geneva',
+            value: 'Geneva',
+          },
+          {
+            label: 'Jinan',
+            value: 'Jinan',
           },
         ],
       },
       {
         label: 'Mountains',
-        value: 'mountains',
+        value: 'Mountains',
 
         children: [
           {
             label: 'Rigi',
-            value: 'rigi',
+            value: 'Rigi',
           },
           {
             label: 'Pilatus',
-            value: 'pilatus',
+            value: 'Pilatus',
           },
         ],
       },
@@ -47,74 +51,74 @@ export const Dataset = [
     children: [
       {
         label: 'Spring',
-        value: 'spring',
+        value: 'Spring',
 
         children: [
           {
             label: 'March',
-            value: 'march',
+            value: 'March',
           },
           {
             label: 'April',
-            value: 'april',
+            value: 'April',
           },
           {
             label: 'May',
-            value: 'may',
+            value: 'May',
           },
         ],
       },
       {
         label: 'Summer',
-        value: 'summer',
+        value: 'Summer',
         children: [
           {
             label: 'June',
-            value: 'june',
+            value: 'June',
           },
           {
             label: 'July',
-            value: 'july',
+            value: 'July',
           },
           {
             label: 'August',
-            value: 'august',
+            value: 'August',
           },
         ],
       },
       {
         label: 'Autumn',
-        value: 'autumn',
+        value: 'Autumn',
         children: [
           {
             label: 'September',
-            value: 'september',
+            value: 'September',
           },
           {
             label: 'October',
-            value: 'october',
+            value: 'October',
           },
           {
             label: 'November',
-            value: 'november',
+            value: 'November',
           },
         ],
       },
       {
         label: 'Winter',
-        value: 'winter',
+        value: 'Winter',
         children: [
           {
             label: 'December',
-            value: 'december',
+            value: 'December',
           },
           {
             label: 'January',
-            value: 'january',
+            value: 'January',
           },
           {
             label: 'February',
-            value: 'february',
+            value: 'February',
           },
         ],
       },
@@ -126,29 +130,33 @@ export const Dataset = [
     children: [
       {
         label: 'Family',
-        value: 'family',
+        value: 'Family',
         children: [
           {
             label: 'Father',
-            value: 'father',
+            value: 'Father',
           },
           {
             label: 'Mother',
-            value: 'mother',
+            value: 'Mother',
           },
           {
             label: 'Grandmother',
-            value: 'grandmother',
+            value: 'Grandmother',
           },
           {
             label: 'Grandfather',
-            value: 'grandfather',
+            value: 'Grandfather',
           },
         ],
       },
       {
         label: 'Friends',
-        value: 'friends',
+        value: 'Friends',
+      },
+      {
+        label: 'Me',
+        value: 'Me',
       },
     ],
   },
@@ -158,29 +166,29 @@ export const Dataset = [
     children: [
       {
         label: 'Outdoor',
-        value: 'outdoor',
+        value: 'Outdoor',
         children: [
           {
             label: 'Hiking',
-            value: 'hiking',
+            value: 'Hiking',
           },
         ],
       },
       {
         label: 'Weather',
-        value: 'weather',
+        value: 'Weather',
         children: [
           {
             label: 'Snow',
-            value: 'snow',
+            value: 'Snow',
           },
           {
             label: 'Sunny',
-            value: 'sunny',
+            value: 'Sunny',
           },
           {
             label: 'Rain',
-            value: 'rain',
+            value: 'Rain',
           },
         ],
       },

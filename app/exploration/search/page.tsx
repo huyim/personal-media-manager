@@ -113,43 +113,40 @@ const Home: NextPage = () => {
       source: '1',
       target: '2',
       id: '1-2',
-      label: 'Time',
+      label: 'when?',
     },
     {
       source: '1',
       target: '3',
       id: '1-3',
-      label: 'Locations',
+      label: 'where?',
     },
     {
       source: '1',
       target: '4',
       id: '1-4',
-      label: 'People',
+      label: 'who?',
     },
     {
       source: '1',
       target: '5',
       id: '1-5',
-      label: 'Events',
+      label: 'what?',
     },
     {
       source: '3',
       target: '31',
       id: '3-31',
-      label: '3-31',
     },
     {
       source: '3',
       target: '32',
       id: '3-32',
-      label: '3-32',
     },
     {
       source: '3',
       target: '33',
       id: '3-33',
-      label: '3-33',
     },
   ];
 
