@@ -198,12 +198,12 @@ const MediaSearch = () => {
             {fileId ? (
               <div className="text-green-900">
                 <IconTickCircle style={{ color: '#1B5E20' }} />
-                Done
+                Visual Search Ready
               </div>
             ) : (
               <div className="text-blue-900">
                 <IconSpin spin style={{ color: '#0D47A1' }} />
-                uploading...
+                Processing...
               </div>
             )}
           </div>

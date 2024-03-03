@@ -100,6 +100,7 @@ const VisualQuery = () => {
         if (response == undefined) return;
         let data = await response.json();
 
+        /** Node initialization */
         if (data.results.length > 0) {
           const locationsNode = {
             id: id_locations,
@@ -186,7 +187,7 @@ const VisualQuery = () => {
         let ty = 100;
         let ex = 0;
         let ey = 100;
-        data.results.forEach((res: any) => {
+        data.results.forEach(async (res: any) => {
           //   setQueryResult((prevQuery) => [
           //     ...prevQuery,
           const queries = res.o.replace('^^String', '');
@@ -194,6 +195,34 @@ const VisualQuery = () => {
 
           const tags = queries.split(',');
           const id_temp = getId();
+
+          /** Find similar media */
+          let options = {
+            method: 'POST',
+            body: JSON.stringify({
+              s: [],
+              p: ['<https://schema.org/category>'],
+              o: [res.o],
+            }),
+          };
+          let urlList: any[] = [];
+
+          try {
+            let response = await fetch(BACKEND + 'query/quads', options);
+
+            if (response == undefined) return;
+            let data = await response.json();
+
+            data.results.forEach((res: any) => {
+              const url = res.s.replace('<', '').replace('>', '');
+              if (url != mediaUrl) {
+                urlList.push(url);
+              }
+              console.log(url);
+            });
+          } catch (error: any) {
+            console.log(error);
+          }
 
           if (tags[0] === 'locations') {
             const locationNode1 = {
@@ -232,6 +261,34 @@ const VisualQuery = () => {
                   target: id_temp2,
                 }),
               );
+
+              if (urlList.length > 0) {
+                let u_temp = 100;
+                for (let i = 0; i < urlList.length; i++) {
+                  const id_temp3 = getId();
+                  const relatedNode = {
+                    id: id_temp3,
+                    position: {
+                      x: -300 + lx,
+                      y: 350 + 2 * ly + u_temp,
+                    },
+                    type: 'videoNode',
+                    data: {
+                      url: urlList[i],
+                    },
+                  };
+
+                  setNodes((nds) => nds.concat(relatedNode));
+                  setEdges((eds) =>
+                    eds.concat({
+                      id: id_temp3,
+                      source: id_temp2,
+                      target: id_temp3,
+                      label: 'related media',
+                    }),
+                  );
+                }
+              }
             }
 
             lx = lx - 175;
@@ -272,9 +329,35 @@ const VisualQuery = () => {
                   target: id_temp,
                 }),
               );
+              if (urlList.length > 0) {
+                let u_temp = 100;
+                for (let i = 0; i < urlList.length; i++) {
+                  const id_temp3 = getId();
+                  const relatedNode = {
+                    id: id_temp3,
+                    position: {
+                      x: -300 + tx,
+                      y: 0 - 2 * ty - u_temp,
+                    },
+                    type: 'videoNode',
+                    data: {
+                      url: urlList[i],
+                    },
+                  };
 
-              tx = tx - 175;
+                  setNodes((nds) => nds.concat(relatedNode));
+                  setEdges((eds) =>
+                    eds.concat({
+                      id: id_temp3,
+                      source: id_temp3,
+                      target: id_temp2,
+                      label: 'related media',
+                    }),
+                  );
+                }
+              }
             }
+            tx = tx - 175;
           } else if (tags[0] === 'events') {
             const eventsNode1 = {
               id: id_temp,
@@ -312,9 +395,35 @@ const VisualQuery = () => {
                   target: id_temp,
                 }),
               );
+              if (urlList.length > 0) {
+                let u_temp = 100;
+                for (let i = 0; i < urlList.length; i++) {
+                  const id_temp3 = getId();
+                  const relatedNode = {
+                    id: id_temp3,
+                    position: {
+                      x: 300 - ex,
+                      y: 0 - 2 * ey - u_temp,
+                    },
+                    type: 'videoNode',
+                    data: {
+                      url: urlList[i],
+                    },
+                  };
 
-              ex = ex + 175;
+                  setNodes((nds) => nds.concat(relatedNode));
+                  setEdges((eds) =>
+                    eds.concat({
+                      id: id_temp3,
+                      source: id_temp3,
+                      target: id_temp2,
+                      label: 'related media',
+                    }),
+                  );
+                }
+              }
             }
+            ex = ex + 175;
           } else if (tags[0] === 'people') {
             const peopleNode1 = {
               id: id_temp,
@@ -352,9 +461,35 @@ const VisualQuery = () => {
                   target: id_temp2,
                 }),
               );
+              if (urlList.length > 0) {
+                let u_temp = 100;
+                for (let i = 0; i < urlList.length; i++) {
+                  const id_temp3 = getId();
+                  const relatedNode = {
+                    id: id_temp3,
+                    position: {
+                      x: 300 + px,
+                      y: 350 + 2 * py + u_temp,
+                    },
+                    type: 'videoNode',
+                    data: {
+                      url: urlList[i],
+                    },
+                  };
 
-              px = px + 175;
+                  setNodes((nds) => nds.concat(relatedNode));
+                  setEdges((eds) =>
+                    eds.concat({
+                      id: id_temp3,
+                      source: id_temp2,
+                      target: id_temp3,
+                      label: 'related media',
+                    }),
+                  );
+                }
+              }
             }
+            px = px + 175;
           }
         });
       } catch (error: any) {
