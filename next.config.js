@@ -3,7 +3,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const nextConfig = {
-  reactStrictMode: true, // Recommended for the `pages` directory, default in `app`.
+  reactStrictMode: false, // Recommended for the `pages` directory, default in `app`.
   experimental: {
     appDir: true,
   },

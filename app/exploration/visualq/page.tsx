@@ -188,11 +188,7 @@ const VisualQuery = () => {
         let ex = 0;
         let ey = 100;
         data.results.forEach(async (res: any) => {
-          //   setQueryResult((prevQuery) => [
-          //     ...prevQuery,
           const queries = res.o.replace('^^String', '');
-          //   ]);
-
           const tags = queries.split(',');
           const id_temp = getId();
 
@@ -218,7 +214,6 @@ const VisualQuery = () => {
               if (url != mediaUrl) {
                 urlList.push(url);
               }
-              console.log(url);
             });
           } catch (error: any) {
             console.log(error);
@@ -337,7 +332,7 @@ const VisualQuery = () => {
                     id: id_temp3,
                     position: {
                       x: -300 + tx,
-                      y: 0 - 2 * ty - u_temp,
+                      y: 0 - 2 * ty - 3 * u_temp,
                     },
                     type: 'videoNode',
                     data: {
@@ -403,7 +398,7 @@ const VisualQuery = () => {
                     id: id_temp3,
                     position: {
                       x: 300 - ex,
-                      y: 0 - 2 * ey - u_temp,
+                      y: 0 - 2 * ey - 3 * u_temp,
                     },
                     type: 'videoNode',
                     data: {

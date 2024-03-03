@@ -12,27 +12,64 @@ import {
   useCollapse,
 } from 'reagraph';
 
+import { Dataset } from '../../../ui/category';
+
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { values } from 'underscore';
 
 const BACKEND = 'http://localhost:8080/';
 let nextId = 0;
 
 const Home: NextPage = () => {
-  const [tag, setTag] = useState<string | null>(null);
-  const [queryResult, setQueryResult] = useState<string | null>(null);
+  const [queryLink, setQueryLink] = useState<string[]>([]);
+  const [queryLinkedTags, setQueryLinkedTags] = useState<string[]>([]);
 
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    setTag(searchParams.get('tag'));
+  const tag = searchParams.get('tag');
 
+  /** Import pre-defined dataset */
+  let fullTags = [];
+  for (let i = 0; i < Dataset.length; i++) {
+    const len2 = Dataset[i].children?.length;
+    for (let j = 0; j < len2; j++) {
+      const len3 = Dataset[i]?.children[j]?.children?.length;
+      if (len3 !== undefined) {
+        for (let k = 0; k < len3; k++) {
+          // @ts-ignore
+          const tagSpecial = Dataset[i].children[j].children[k].value;
+          fullTags.push(
+            Dataset[i].value +
+              ',' +
+              Dataset[i].children[j].value +
+              ',' +
+              tagSpecial,
+          );
+        }
+      } else {
+        fullTags.push(Dataset[i].value + ',' + Dataset[i].children[j].value);
+      }
+    }
+  }
+
+  /** Get tag name in system */
+  let queryTag = '';
+  for (let i = 0; i < fullTags.length; i++) {
+    if (tag !== null) {
+      if (fullTags[i].toLowerCase().includes(tag)) {
+        queryTag = fullTags[i];
+      }
+    }
+  }
+
+  useEffect(() => {
     async function query() {
       let options = {
         method: 'POST',
         body: JSON.stringify({
           s: [],
           p: ['<https://schema.org/category>'],
-          o: [tag + '^^String'],
+          o: [queryTag + '^^String'],
         }),
       };
 
@@ -42,19 +79,53 @@ const Home: NextPage = () => {
         if (response == undefined) return;
         let data = await response.json();
 
-        data.results.forEach((res: any) => {
-          setQueryResult(res.s.replace('<', '').replace('>', ''));
+        /**Get all links contained queried tag */
+
+        data.results.forEach(async (res: any) => {
+          let options = {
+            method: 'POST',
+            body: JSON.stringify({
+              s: [res.s],
+              p: ['<https://schema.org/category>'],
+              o: [],
+            }),
+          };
+
+          try {
+            let response = await fetch(BACKEND + 'query/quads', options);
+
+            if (response == undefined) return;
+            let data = await response.json();
+
+            data.results.forEach((res: any) => {
+              // Get related tags
+              if (res.o.replace('^^String', '') !== queryTag) {
+                setQueryLinkedTags((prevQuery) => [
+                  ...prevQuery,
+                  res.o.replace('^^String', ''),
+                ]);
+              }
+            });
+          } catch (error: any) {
+            console.log(error);
+          }
+
+          setQueryLink((prevQuery) => [
+            ...prevQuery,
+            res.s.replace('<', '').replace('>', ''),
+          ]);
         });
-        console.log(queryResult);
       } catch (error: any) {
         console.log(error);
       }
     }
     query();
-  });
+  }, []);
+
+  console.log(queryLinkedTags);
 
   // Tags
-  var tagList = [{ color: 'green', children: tag }];
+  let tagList = [{ color: 'green', children: tag }];
 
   const divStyle = {
     backgroundColor: 'var(--semi-color-fill-0)',
