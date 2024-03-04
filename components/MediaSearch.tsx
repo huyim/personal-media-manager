@@ -102,7 +102,7 @@ const MediaSearch = () => {
                   </g>
                 </svg>
                 <strong className="text-sm font-medium text-black">
-                  Select an image or a video
+                  Select an image or a video to search
                 </strong>
                 <input
                   className="block h-0 w-0"
