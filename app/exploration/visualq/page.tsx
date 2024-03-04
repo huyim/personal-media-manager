@@ -41,7 +41,6 @@ const VisualQuery = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   //   const [tag, setTag] = useState<string | null>(null);
-  const connectingNodeId = useRef(null);
 
   const searchParams = useSearchParams();
 
@@ -81,9 +80,13 @@ const VisualQuery = () => {
       }
 
       const id_locations = getId();
+      let locationNodeAdded = false;
       const id_people = getId();
+      let peopleNodeAdded = false;
       const id_time = getId();
+      let timeNodeAdded = false;
       const id_events = getId();
+      let eventsNodeAdded = false;
 
       let options = {
         method: 'POST',
@@ -99,85 +102,6 @@ const VisualQuery = () => {
 
         if (response == undefined) return;
         let data = await response.json();
-
-        /** Node initialization */
-        if (data.results.length > 0) {
-          const locationsNode = {
-            id: id_locations,
-            position: {
-              x: -300,
-              y: 350,
-            },
-            data: { label: 'Location' },
-          };
-
-          setNodes((nds) => nds.concat(locationsNode));
-          setEdges((eds) =>
-            eds.concat({
-              id: id_locations,
-              source: id,
-              target: id_locations,
-              label: 'where?',
-            }),
-          );
-
-          const peopleNode = {
-            id: id_people,
-            position: {
-              x: 300,
-              y: 350,
-            },
-            data: { label: 'People' },
-          };
-
-          setNodes((nds) => nds.concat(peopleNode));
-          setEdges((eds) =>
-            eds.concat({
-              id: id_people,
-              source: id,
-              target: id_people,
-              label: 'who?',
-            }),
-          );
-
-          const timeNode = {
-            id: id_time,
-            position: {
-              x: -300,
-              y: 0,
-            },
-            data: { label: 'Time' },
-          };
-
-          setNodes((nds) => nds.concat(timeNode));
-          setEdges((eds) =>
-            eds.concat({
-              id: id_time,
-              source: id_time,
-              target: id,
-              label: 'when?',
-            }),
-          );
-
-          const eventsNode = {
-            id: id_events,
-            position: {
-              x: 300,
-              y: 0,
-            },
-            data: { label: 'Events' },
-          };
-
-          setNodes((nds) => nds.concat(eventsNode));
-          setEdges((eds) =>
-            eds.concat({
-              id: id_events,
-              source: id_events,
-              target: id,
-              label: 'what?',
-            }),
-          );
-        }
 
         let lx = 0;
         let ly = 100;
@@ -217,6 +141,104 @@ const VisualQuery = () => {
             });
           } catch (error: any) {
             console.log(error);
+          }
+
+          if (
+            queries.split(',')[0] === 'locations' &&
+            locationNodeAdded === false
+          ) {
+            const locationsNode = {
+              id: id_locations,
+              position: {
+                x: -300,
+                y: 250,
+              },
+              data: { label: 'Location' },
+            };
+
+            setNodes((nds) => nds.concat(locationsNode));
+            setEdges((eds) =>
+              eds.concat({
+                id: id_locations,
+                source: id,
+                target: id_locations,
+                label: 'where?',
+              }),
+            );
+
+            locationNodeAdded = true;
+          } else if (
+            queries.split(',')[0] === 'people' &&
+            peopleNodeAdded === false
+          ) {
+            const peopleNode = {
+              id: id_people,
+              position: {
+                x: 300,
+                y: 350,
+              },
+              data: { label: 'People' },
+            };
+
+            setNodes((nds) => nds.concat(peopleNode));
+            setEdges((eds) =>
+              eds.concat({
+                id: id_people,
+                source: id,
+                target: id_people,
+                label: 'who?',
+              }),
+            );
+
+            peopleNodeAdded = true;
+          } else if (
+            queries.split(',')[0] === 'time' &&
+            timeNodeAdded === false
+          ) {
+            const timeNode = {
+              id: id_time,
+              position: {
+                x: -300,
+                y: 0,
+              },
+              data: { label: 'Time' },
+            };
+
+            setNodes((nds) => nds.concat(timeNode));
+            setEdges((eds) =>
+              eds.concat({
+                id: id_time,
+                source: id_time,
+                target: id,
+                label: 'when?',
+              }),
+            );
+
+            timeNodeAdded = true;
+          } else if (
+            queries.split(',')[0] === 'events' &&
+            eventsNodeAdded === false
+          ) {
+            const eventsNode = {
+              id: id_events,
+              position: {
+                x: 150,
+                y: 0,
+              },
+              data: { label: 'Events' },
+            };
+
+            setNodes((nds) => nds.concat(eventsNode));
+            setEdges((eds) =>
+              eds.concat({
+                id: id_events,
+                source: id_events,
+                target: id,
+                label: 'what?',
+              }),
+            );
+
+            eventsNodeAdded = true;
           }
 
           if (tags[0] === 'locations') {

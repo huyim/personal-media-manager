@@ -12,6 +12,10 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import VideoNode from '../../../components/VideoNode';
+import { Dataset } from '../../../ui/category';
+
+let id = 0;
+const getId = () => `${id++}`;
 
 const BACKEND = 'http://localhost:8080/';
 
@@ -23,24 +27,72 @@ const nodeTypes = {
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 const MediaDisplay = () => {
-  const [queryResult, setQueryResult] = useState<string | null>(null);
+  const [queryResult, setQueryResult] = useState<string[]>([]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [tag, setTag] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
+  const queries = searchParams.get('queries');
+
+  /** Import pre-defined dataset */
+  let fullTags = [];
+  for (let i = 0; i < Dataset.length; i++) {
+    const len2 = Dataset[i].children?.length;
+    for (let j = 0; j < len2; j++) {
+      const len3 = Dataset[i]?.children[j]?.children?.length;
+      if (len3 !== undefined) {
+        for (let k = 0; k < len3; k++) {
+          // @ts-ignore
+          const tagSpecial = Dataset[i].children[j].children[k].value;
+          fullTags.push(
+            Dataset[i].value +
+              ',' +
+              Dataset[i].children[j].value +
+              ',' +
+              tagSpecial,
+          );
+        }
+      } else {
+        fullTags.push(Dataset[i].value + ',' + Dataset[i].children[j].value);
+      }
+    }
+  }
+
+  let queryList: string[] = [];
+  if (queries !== null) {
+    const queryTemp = queries.split(',');
+
+    for (let i = 0; i < queryTemp.length; i++) {
+      if (queryTemp[i] !== '') {
+        for (let j = 0; j < fullTags.length; j++) {
+          if (fullTags[j].toLowerCase().includes(queryTemp[i].toLowerCase())) {
+            queryList.push(fullTags[j]);
+          }
+        }
+      }
+    }
+  }
 
   useEffect(() => {
-    setTag(searchParams.get('queries'));
-
     async function query() {
+      const id = getId();
+      setNodes([
+        {
+          id: id,
+          type: 'input',
+          data: { label: queries?.replace(',', ' ') },
+          position: { x: 0, y: 50 },
+        },
+      ]);
+      let media_res = '';
+
       let options = {
         method: 'POST',
         body: JSON.stringify({
           s: [],
           p: ['<https://schema.org/category>'],
-          o: [tag + '^^String'],
+          o: [queryList[0] + '^^String'],
         }),
       };
 
@@ -50,60 +102,94 @@ const MediaDisplay = () => {
         if (response == undefined) return;
         let data = await response.json();
 
+        let media_res: any[] = [];
         data.results.forEach((res: any) => {
-          setQueryResult(res.s.replace('<', '').replace('>', ''));
+          media_res.push(res.s.replace('<', '').replace('>', ''));
+          if (queryList.length === 1) {
+            const id_video = getId();
+            const newNode = {
+              id: id_video,
+              type: 'videoNode',
+              data: {
+                url: res.s.replace('<', '').replace('>', ''),
+              },
+              position: { x: -100, y: 100 },
+              parentNode: id,
+            };
+
+            setNodes((nds) => nds.concat(newNode));
+            setEdges((eds) =>
+              eds.concat({
+                id: id_video,
+                source: id,
+                target: id_video,
+              }),
+            );
+          }
         });
+
+        for (let j = 0; j < media_res.length; j++) {
+          for (let i = 1; i < queryList.length; i++) {
+            let options = {
+              method: 'POST',
+              body: JSON.stringify({
+                s: [],
+                p: ['<https://schema.org/category>'],
+                o: [queryList[i] + '^^String'],
+              }),
+            };
+
+            try {
+              let response = await fetch(BACKEND + 'query/quads', options);
+
+              if (response == undefined) return;
+              let data = await response.json();
+
+              data.results.forEach((res: any) => {
+                // console.log(media_res[j]);
+                // console.log(res.s.replace('<', '').replace('>', ''));
+                if (media_res[j] === res.s.replace('<', '').replace('>', '')) {
+                  setQueryResult((prevQ) => [
+                    ...prevQ,
+                    res.s.replace('<', '').replace('>', ''),
+                  ]);
+
+                  const id_video = getId();
+                  const newNode = {
+                    id: id_video,
+                    type: 'videoNode',
+                    data: {
+                      url: res.s.replace('<', '').replace('>', ''),
+                    },
+                    position: { x: -100, y: 100 },
+                    parentNode: id,
+                  };
+
+                  setNodes((nds) => nds.concat(newNode));
+                  setEdges((eds) =>
+                    eds.concat({
+                      id: id_video,
+                      source: id,
+                      target: id_video,
+                    }),
+                  );
+                }
+              });
+            } catch (error: any) {
+              console.log(error);
+            }
+          }
+        }
         console.log(data);
       } catch (error: any) {
         console.log(error);
       }
     }
     query();
-  });
+  }, []);
 
-  useEffect(() => {
-    setNodes([
-      {
-        id: '1',
-        type: 'input',
-        data: { label: tag },
-        position: { x: 0, y: 50 },
-      },
-      {
-        id: '2',
-        type: 'videoNode',
-        data: {
-          url: queryResult,
-        },
-        position: { x: -100, y: 100 },
-      },
-    ]);
+  console.log(queryResult);
 
-    setEdges([
-      {
-        id: 'e1-2',
-        source: '1',
-        target: '2',
-        animated: true,
-        style: { stroke: '#000' },
-      },
-      {
-        id: 'e2a-3',
-        source: '1',
-        target: '3',
-        animated: true,
-        style: { stroke: '#000' },
-      },
-    ]);
-  });
-
-  const onConnect = useCallback(
-    (params: any) =>
-      setEdges((eds) =>
-        addEdge({ ...params, animated: true, style: { stroke: '#fff' } }, eds),
-      ),
-    [],
-  );
   return (
     <div style={{ position: 'fixed', width: '55%', height: '75%' }}>
       <ReactFlow
@@ -111,7 +197,6 @@ const MediaDisplay = () => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         nodeTypes={nodeTypes}
         connectionLineStyle={connectionLineStyle}
         defaultViewport={defaultViewport}
