@@ -12,6 +12,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import VideoNode from '../../../components/VideoNode';
+import ImageNode from '../../../components/ImageNode';
 import { Dataset } from '../../../ui/category';
 
 let id = 0;
@@ -22,6 +23,7 @@ const BACKEND = 'http://localhost:8080/';
 const connectionLineStyle = { stroke: '#000' };
 const nodeTypes = {
   videoNode: VideoNode,
+  imageNode: ImageNode,
 };
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
