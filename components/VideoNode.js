@@ -23,8 +23,6 @@ export default memo(({ data }) => {
         }),
       };
 
-      console.log(options);
-
       try {
         let response = await fetch(BACKEND + 'query/quads', options);
 
@@ -42,7 +40,7 @@ export default memo(({ data }) => {
         console.log(error);
       }
     }
-    console.log(videoType);
+    //console.log(videoType);
     query();
   }, []);
 

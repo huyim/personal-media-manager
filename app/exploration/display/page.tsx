@@ -75,123 +75,187 @@ const MediaDisplay = () => {
       }
     }
   }
+  //@ts-ignore
+  if (queries?.length > 2) {
+    useEffect(() => {
+      async function query() {
+        const id = getId();
+        setNodes([
+          {
+            id: id,
+            type: 'input',
+            //@ts-ignore
+            data: {
+              label: queries,
+            },
+            position: { x: 0, y: 50 },
+          },
+        ]);
 
-  useEffect(() => {
-    async function query() {
-      const id = getId();
-      setNodes([
-        {
-          id: id,
-          type: 'input',
-          data: { label: queries?.replace(',', ' ') },
-          position: { x: 0, y: 50 },
-        },
-      ]);
-      let media_res = '';
+        let options = {
+          method: 'POST',
+          body: JSON.stringify({
+            s: [],
+            p: ['<https://schema.org/category>'],
+            o: [queryList[0] + '^^String'],
+          }),
+        };
 
-      let options = {
-        method: 'POST',
-        body: JSON.stringify({
-          s: [],
-          p: ['<https://schema.org/category>'],
-          o: [queryList[0] + '^^String'],
-        }),
-      };
+        try {
+          let response = await fetch(BACKEND + 'query/quads', options);
 
-      try {
-        let response = await fetch(BACKEND + 'query/quads', options);
+          if (response == undefined) return;
+          let data = await response.json();
 
-        if (response == undefined) return;
-        let data = await response.json();
-
-        let media_res: any[] = [];
-        data.results.forEach((res: any) => {
-          media_res.push(res.s.replace('<', '').replace('>', ''));
-          if (queryList.length === 1) {
-            const id_video = getId();
-            const newNode = {
-              id: id_video,
-              type: 'videoNode',
-              data: {
-                url: res.s.replace('<', '').replace('>', ''),
-              },
-              position: { x: -100, y: 100 },
-              parentNode: id,
-            };
-
-            setNodes((nds) => nds.concat(newNode));
-            setEdges((eds) =>
-              eds.concat({
+          let media_res: any[] = [];
+          data.results.forEach((res: any) => {
+            media_res.push(res.s.replace('<', '').replace('>', ''));
+            if (queryList.length === 1) {
+              const id_video = getId();
+              const newNode = {
                 id: id_video,
-                source: id,
-                target: id_video,
-              }),
-            );
-          }
-        });
+                type: 'videoNode',
+                data: {
+                  url: res.s.replace('<', '').replace('>', ''),
+                },
+                position: { x: -100, y: 100 },
+                parentNode: id,
+              };
 
-        for (let j = 0; j < media_res.length; j++) {
-          for (let i = 1; i < queryList.length; i++) {
-            let options = {
-              method: 'POST',
-              body: JSON.stringify({
-                s: [],
-                p: ['<https://schema.org/category>'],
-                o: [queryList[i] + '^^String'],
-              }),
-            };
+              setNodes((nds) => nds.concat(newNode));
+              setEdges((eds) =>
+                eds.concat({
+                  id: id_video,
+                  source: id,
+                  target: id_video,
+                }),
+              );
+            }
+          });
 
-            try {
-              let response = await fetch(BACKEND + 'query/quads', options);
+          for (let j = 0; j < media_res.length; j++) {
+            for (let i = 1; i < queryList.length; i++) {
+              let options = {
+                method: 'POST',
+                body: JSON.stringify({
+                  s: [],
+                  p: ['<https://schema.org/category>'],
+                  o: [queryList[i] + '^^String'],
+                }),
+              };
 
-              if (response == undefined) return;
-              let data = await response.json();
+              try {
+                let response = await fetch(BACKEND + 'query/quads', options);
 
-              data.results.forEach((res: any) => {
-                // console.log(media_res[j]);
-                // console.log(res.s.replace('<', '').replace('>', ''));
-                if (media_res[j] === res.s.replace('<', '').replace('>', '')) {
-                  setQueryResult((prevQ) => [
-                    ...prevQ,
-                    res.s.replace('<', '').replace('>', ''),
-                  ]);
+                if (response == undefined) return;
+                let data = await response.json();
 
-                  const id_video = getId();
-                  const newNode = {
-                    id: id_video,
-                    type: 'videoNode',
-                    data: {
-                      url: res.s.replace('<', '').replace('>', ''),
-                    },
-                    position: { x: -100, y: 100 },
-                    parentNode: id,
-                  };
+                data.results.forEach((res: any) => {
+                  if (
+                    media_res[j] === res.s.replace('<', '').replace('>', '')
+                  ) {
+                    setQueryResult((prevQ) => [
+                      ...prevQ,
+                      res.s.replace('<', '').replace('>', ''),
+                    ]);
 
-                  setNodes((nds) => nds.concat(newNode));
-                  setEdges((eds) =>
-                    eds.concat({
+                    const id_video = getId();
+                    const newNode = {
                       id: id_video,
-                      source: id,
-                      target: id_video,
-                    }),
-                  );
-                }
-              });
-            } catch (error: any) {
-              console.log(error);
+                      type: 'videoNode',
+                      data: {
+                        url: res.s.replace('<', '').replace('>', ''),
+                      },
+                      position: { x: -100, y: 100 },
+                      parentNode: id,
+                    };
+
+                    setNodes((nds) => nds.concat(newNode));
+                    setEdges((eds) =>
+                      eds.concat({
+                        id: id_video,
+                        source: id,
+                        target: id_video,
+                      }),
+                    );
+                  }
+                });
+              } catch (error: any) {
+                console.log(error);
+              }
             }
           }
+          console.log(data);
+        } catch (error: any) {
+          console.log(error);
         }
-        console.log(data);
-      } catch (error: any) {
-        console.log(error);
       }
-    }
-    query();
-  }, []);
 
-  console.log(queryResult);
+      query();
+    }, []);
+  }
 
+  if (queries?.length === 1) {
+    useEffect(() => {
+      async function query() {
+        const id = getId();
+        setNodes([
+          {
+            id: id,
+            type: 'input',
+            data: { label: queries },
+            position: { x: 0, y: 50 },
+          },
+        ]);
+        let pos = 50;
+        for (let q = 0; q < queryList.length; q++) {
+          let options = {
+            method: 'POST',
+            body: JSON.stringify({
+              s: [],
+              p: ['<https://schema.org/category>'],
+              o: [queryList[q] + '^^String'],
+            }),
+          };
+
+          try {
+            let response = await fetch(BACKEND + 'query/quads', options);
+
+            if (response == undefined) return;
+            let data = await response.json();
+
+            data.results.forEach((res: any) => {
+              const id_video = getId();
+              const newNode = {
+                id: id_video,
+                type: 'videoNode',
+                data: {
+                  url: res.s.replace('<', '').replace('>', ''),
+                },
+                position: { x: -250 + pos, y: 100 },
+                parentNode: id,
+              };
+
+              setNodes((nds) => nds.concat(newNode));
+              setEdges((eds) =>
+                eds.concat({
+                  id: id_video,
+                  source: id,
+                  target: id_video,
+                }),
+              );
+
+              pos = pos + 50;
+            });
+          } catch (error: any) {
+            console.log(error);
+          }
+        }
+      }
+
+      query();
+    }, []);
+  }
   return (
     <div style={{ position: 'fixed', width: '55%', height: '75%' }}>
       <ReactFlow

@@ -472,7 +472,10 @@ const Home: NextPage = () => {
     for (let i = 0; i < fullTags.length; i++) {
       // @ts-ignore
       if (fullTags[i].includes(selectedNodes)) {
-        finalQuery = finalQuery + ',' + selectedNodes;
+        // @ts-ignore
+        if (!finalQuery?.includes(selectedNodes)) {
+          finalQuery = finalQuery + ',' + selectedNodes;
+        }
       }
     }
   }
