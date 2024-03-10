@@ -76,7 +76,7 @@ const MediaDisplay = () => {
     }
   }
   //@ts-ignore
-  if (queries?.length > 2) {
+  if (queries?.split(',').length > 1) {
     useEffect(() => {
       async function query() {
         const id = getId();
@@ -92,102 +92,60 @@ const MediaDisplay = () => {
           },
         ]);
 
-        let options = {
-          method: 'POST',
-          body: JSON.stringify({
-            s: [],
-            p: ['<https://schema.org/category>'],
-            o: [queryList[0] + '^^String'],
-          }),
-        };
+        let media_res: any[] = [];
 
-        try {
-          let response = await fetch(BACKEND + 'query/quads', options);
+        for (let q = 0; q < queryList.length; q++) {
+          let options = {
+            method: 'POST',
+            body: JSON.stringify({
+              s: [],
+              p: ['<https://schema.org/category>'],
+              o: [queryList[q] + '^^String'],
+            }),
+          };
 
-          if (response == undefined) return;
-          let data = await response.json();
+          console.log(queryList[q]);
+          try {
+            let response = await fetch(BACKEND + 'query/quads', options);
 
-          let media_res: any[] = [];
-          data.results.forEach((res: any) => {
-            media_res.push(res.s.replace('<', '').replace('>', ''));
-            if (queryList.length === 1) {
-              const id_video = getId();
-              const newNode = {
-                id: id_video,
-                type: 'videoNode',
-                data: {
-                  url: res.s.replace('<', '').replace('>', ''),
-                },
-                position: { x: -100, y: 100 },
-                parentNode: id,
-              };
+            if (response == undefined) return;
+            let data = await response.json();
 
-              setNodes((nds) => nds.concat(newNode));
-              setEdges((eds) =>
-                eds.concat({
-                  id: id_video,
-                  source: id,
-                  target: id_video,
-                }),
-              );
-            }
-          });
-
-          for (let j = 0; j < media_res.length; j++) {
-            for (let i = 1; i < queryList.length; i++) {
-              let options = {
-                method: 'POST',
-                body: JSON.stringify({
-                  s: [],
-                  p: ['<https://schema.org/category>'],
-                  o: [queryList[i] + '^^String'],
-                }),
-              };
-
-              try {
-                let response = await fetch(BACKEND + 'query/quads', options);
-
-                if (response == undefined) return;
-                let data = await response.json();
-
-                data.results.forEach((res: any) => {
-                  if (
-                    media_res[j] === res.s.replace('<', '').replace('>', '')
-                  ) {
-                    setQueryResult((prevQ) => [
-                      ...prevQ,
-                      res.s.replace('<', '').replace('>', ''),
-                    ]);
-
-                    const id_video = getId();
-                    const newNode = {
-                      id: id_video,
-                      type: 'videoNode',
-                      data: {
-                        url: res.s.replace('<', '').replace('>', ''),
-                      },
-                      position: { x: -100, y: 100 },
-                      parentNode: id,
-                    };
-
-                    setNodes((nds) => nds.concat(newNode));
-                    setEdges((eds) =>
-                      eds.concat({
-                        id: id_video,
-                        source: id,
-                        target: id_video,
-                      }),
-                    );
-                  }
-                });
-              } catch (error: any) {
-                console.log(error);
-              }
-            }
+            data.results.forEach((res: any) => {
+              media_res.push(res.s.replace('<', '').replace('>', ''));
+            });
+          } catch (error: any) {
+            console.log(error);
           }
-          console.log(data);
-        } catch (error: any) {
-          console.log(error);
+        }
+        var occurrences = media_res.reduce(function (obj, item) {
+          obj[item] = (obj[item] || 0) + 1;
+          return obj;
+        }, {});
+        let pos = 50;
+        for (var key in occurrences) {
+          if (occurrences[key] > 1) {
+            const id_video = getId();
+            const newNode = {
+              id: id_video,
+              type: 'videoNode',
+              data: {
+                url: key,
+              },
+              position: { x: -250 + pos, y: 100 },
+              parentNode: id,
+            };
+
+            setNodes((nds) => nds.concat(newNode));
+            setEdges((eds) =>
+              eds.concat({
+                id: id_video,
+                source: id,
+                target: id_video,
+              }),
+            );
+          }
+          pos = pos + 50;
         }
       }
 
@@ -195,7 +153,7 @@ const MediaDisplay = () => {
     }, []);
   }
 
-  if (queries?.length === 1) {
+  if (queries?.split(',').length === 1) {
     useEffect(() => {
       async function query() {
         const id = getId();
