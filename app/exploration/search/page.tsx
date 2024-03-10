@@ -125,6 +125,15 @@ const Home: NextPage = () => {
 
         /**Get all links contained queried tag */
 
+        let lx = 0;
+        let ly = 100;
+        let px = 0;
+        let py = 100;
+        let tx = 0;
+        let ty = 100;
+        let ex = 0;
+        let ey = 100;
+
         data.results.forEach(async (res: any) => {
           let options = {
             method: 'POST',
@@ -140,15 +149,6 @@ const Home: NextPage = () => {
 
             if (response == undefined) return;
             let data = await response.json();
-
-            let lx = 0;
-            let ly = 100;
-            let px = 0;
-            let py = 100;
-            let tx = 0;
-            let ty = 100;
-            let ex = 0;
-            let ey = 100;
 
             data.results.forEach((res: any) => {
               // Get related tags
@@ -213,7 +213,7 @@ const Home: NextPage = () => {
                       id: id_temp2,
                       // type: 'tagNode',
                       position: {
-                        x: -10 + lx,
+                        x: -10,
                         y: 5 + ly,
                       },
                       data: { label: linkedTags.split(',')[2] },
@@ -283,7 +283,7 @@ const Home: NextPage = () => {
                       id: id_temp2,
                       // type: 'tagNode',
                       position: {
-                        x: 10 + px,
+                        x: 10,
                         y: 5 + py,
                       },
                       data: { label: linkedTags.split(',')[2] },
@@ -324,7 +324,6 @@ const Home: NextPage = () => {
 
                     timeNodeAdded = true;
                   }
-
                   const timeNode1 = {
                     id: id_temp,
                     // type: 'tagNode',
@@ -350,7 +349,7 @@ const Home: NextPage = () => {
                       id: id_temp2,
                       // type: 'tagNode',
                       position: {
-                        x: -10 + tx,
+                        x: -10,
                         y: 0 - ty,
                       },
                       data: { label: linkedTags.split(',')[2] },
@@ -417,7 +416,7 @@ const Home: NextPage = () => {
                       id: id_temp2,
                       // type: 'tagNode',
                       position: {
-                        x: 10 - ex,
+                        x: 10,
                         y: 0 - ey,
                       },
                       data: { label: linkedTags.split(',')[2] },
@@ -479,8 +478,6 @@ const Home: NextPage = () => {
       }
     }
   }
-
-  console.log(finalQuery);
 
   const divStyle = {
     backgroundColor: 'var(--semi-color-fill-0)',
