@@ -18,12 +18,75 @@ export const Dataset = [
             value: 'Basel',
           },
           {
-            label: 'Geneva',
-            value: 'Geneva',
+            label: 'Luzern',
+            value: 'Luzern',
           },
           {
             label: 'Jinan',
             value: 'Jinan',
+          },
+          {
+            label: 'Hong Kong',
+            value: 'Hong Kong',
+          },
+          {
+            label: 'Schaffhausen',
+            value: 'Schaffhausen',
+          },
+          {
+            label: 'Vienna',
+            value: 'Vienna',
+          },
+          {
+            label: 'Milan',
+            value: 'Milan',
+          },
+          {
+            label: 'Florence',
+            value: 'Florence',
+          },
+          {
+            label: 'Rome',
+            value: 'Rome',
+          },
+          {
+            label: 'Berlin',
+            value: 'Berlin',
+          },
+          {
+            label: 'Stuttgatt',
+            value: 'Stuttgatt',
+          },
+          {
+            label: 'Munich',
+            value: 'Munich',
+          },
+        ],
+      },
+      {
+        label: 'Landmark',
+        value: 'Landmark',
+
+        children: [
+          {
+            label: 'Church',
+            value: 'Church',
+          },
+          {
+            label: 'Museum',
+            value: 'Museum',
+          },
+          {
+            label: 'Waterfall',
+            value: 'Waterfall',
+          },
+          {
+            label: 'Colosseum',
+            value: 'Colosseum',
+          },
+          {
+            label: 'Temple',
+            value: 'Temple',
           },
         ],
       },
@@ -44,8 +107,18 @@ export const Dataset = [
             label: 'Yingxiong',
             value: 'Yingxiong',
           },
+          {
+            label: 'Pizzo Taneda',
+            value: 'Pizzo Taneda',
+          },
         ],
       },
+
+      {
+        label: 'Lake',
+        value: 'Lake',
+      },
+
       {
         label: 'Country',
         value: 'Country',
@@ -62,6 +135,14 @@ export const Dataset = [
           {
             label: 'Germany',
             value: 'Germany',
+          },
+          {
+            label: 'Austria',
+            value: 'Austria',
+          },
+          {
+            label: 'Italy',
+            value: 'Italy',
           },
         ],
       },
@@ -212,6 +293,52 @@ export const Dataset = [
           {
             label: 'Rain',
             value: 'Rain',
+          },
+        ],
+      },
+      {
+        label: 'Transportation',
+        value: 'Transportation',
+        children: [
+          {
+            label: 'Train',
+            value: 'Train',
+          },
+          {
+            label: 'Boat',
+            value: 'Boat',
+          },
+          {
+            label: 'Car',
+            value: 'Car',
+          },
+        ],
+      },
+      {
+        label: 'Food',
+        value: 'Food',
+        children: [
+          {
+            label: 'Pizza',
+            value: 'Pizza',
+          },
+          {
+            label: 'Noodles',
+            value: 'Noodles',
+          },
+          {
+            label: 'Meat',
+            value: 'Meat',
+          },
+        ],
+      },
+      {
+        label: 'Plant',
+        value: 'Plant',
+        children: [
+          {
+            label: 'Cacao',
+            value: 'Cacao',
           },
         ],
       },
